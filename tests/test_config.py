@@ -78,3 +78,20 @@ def test_p0_det_001_resolved_serialization_is_byte_identical() -> None:
 
     assert first.stable_json().encode() == second.stable_json().encode()
     assert first.config_hash() == second.config_hash()
+
+
+def test_col_env_004_config_hash_is_project_root_independent(tmp_path: Path) -> None:
+    copied = tmp_path / "smoke.yaml"
+    copied.write_text(SMOKE_CONFIG.read_text(encoding="utf-8"), encoding="utf-8")
+
+    here = load_config(SMOKE_CONFIG)
+    there = load_config(copied, project_root=tmp_path)
+
+    # Runtime paths differ per deployment ...
+    assert here.dataset.path != there.dataset.path
+    assert here.output.artifact_dir != there.output.artifact_dir
+    # ... but the serialized identity and hash must match across roots
+    # (local <-> Colab). The identity uses POSIX relative paths only.
+    assert here.stable_json() == there.stable_json()
+    assert here.config_hash() == there.config_hash()
+    assert "data/processed/synthetic-v1" in here.stable_json()

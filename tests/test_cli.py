@@ -38,8 +38,11 @@ def test_p0_reg_001_validate_config_succeeds() -> None:
 
     assert result.returncode == 0, result.stderr
     payload = json.loads(result.stdout)
-    assert payload["dataset"]["path"] == str(ROOT / "data/processed/synthetic-v1")
-    assert payload["output"]["artifact_dir"] == str(ROOT / "artifacts")
+    # validate-config prints the canonical config identity (what config_hash
+    # covers): deployment-independent POSIX relative paths, so local and Colab
+    # see byte-identical output. See COL-ENV-004 / docs/decisions.
+    assert payload["dataset"]["path"] == "data/processed/synthetic-v1"
+    assert payload["output"]["artifact_dir"] == "artifacts"
 
 
 def test_p0_reg_001_dry_run_succeeds() -> None:

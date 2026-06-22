@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from enum import StrEnum
 from pathlib import Path
 from typing import Annotated, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, model_validator
 
 
 class StrictModel(BaseModel):
@@ -117,6 +118,11 @@ class AppConfig(StrictModel):
     output: OutputConfig
     execution_budget: ExecutionBudgetConfig
 
+    # Deployment root used to resolve the path fields below. Excluded from the
+    # serialized identity so config_hash stays independent of where the repo
+    # lives (e.g. local vs Colab). See stable_json().
+    _project_root: Path | None = PrivateAttr(default=None)
+
     @model_validator(mode="after")
     def validate_consistency(self) -> AppConfig:
         if len(self.conditions) != len(set(self.conditions)):
@@ -154,19 +160,31 @@ class AppConfig(StrictModel):
         return self
 
     def resolved(self, project_root: Path) -> AppConfig:
-        dataset_path = _resolve_path(self.dataset.path, project_root)
-        artifact_dir = _resolve_path(self.output.artifact_dir, project_root)
-        return self.model_copy(
+        root = project_root.resolve()
+        dataset_path = _resolve_path(self.dataset.path, root)
+        artifact_dir = _resolve_path(self.output.artifact_dir, root)
+        new = self.model_copy(
             update={
                 "dataset": self.dataset.model_copy(update={"path": dataset_path}),
                 "output": self.output.model_copy(update={"artifact_dir": artifact_dir}),
             }
         )
+        object.__setattr__(new, "_project_root", root)
+        return new
 
     def stable_json(self) -> str:
+        data = self.model_dump(mode="json")
+        # The path fields are resolved to absolute, deployment-specific paths at
+        # load time. Relativize them against the project root (as POSIX) so the
+        # serialized identity — and therefore config_hash — is identical across
+        # machines (local <-> Colab). See COL-ENV-004.
+        root = self._project_root
+        if root is not None:
+            data["dataset"]["path"] = _identity_path(self.dataset.path, root)
+            data["output"]["artifact_dir"] = _identity_path(self.output.artifact_dir, root)
         return (
             json.dumps(
-                self.model_dump(mode="json"),
+                data,
                 ensure_ascii=False,
                 indent=2,
                 sort_keys=True,
@@ -200,3 +218,16 @@ def load_config(path: Path, *, project_root: Path | None = None) -> AppConfig:
 
 def _resolve_path(path: Path, project_root: Path) -> Path:
     return path.resolve() if path.is_absolute() else (project_root / path).resolve()
+
+
+def _identity_path(resolved_path: Path, project_root: Path) -> str:
+    """Render a resolved path as a stable, machine-independent identity string.
+
+    Paths under the project root become POSIX relative paths (e.g.
+    "data/processed/synthetic-v1"); paths outside it fall back to their POSIX
+    absolute form. The result never contains the deployment-specific root.
+    """
+    relative = os.path.relpath(resolved_path, project_root)
+    if relative.startswith(".."):
+        return resolved_path.as_posix()
+    return Path(relative).as_posix()
