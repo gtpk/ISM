@@ -11,9 +11,12 @@ from pydantic import ValidationError
 from ism.config import load_config
 from ism.data.generator import SyntheticGenerator
 from ism.data.io import write_documents
+from ism.experiments.audit import write_condition_audit
+from ism.experiments.conditions import build_condition_matrix
 from ism.inference.mock import MockTextGenerator
 from ism.inference.pipeline import run_mock_pipeline
 from ism.planning import build_execution_plan
+from ism.representation.tokenizer import WhitespaceTokenCounter
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -47,6 +50,13 @@ def build_parser() -> argparse.ArgumentParser:
     mock_run.add_argument("--output", required=True, type=Path)
     mock_run.add_argument("--batch-size", type=int, default=1)
     mock_run.add_argument("--resume", action="store_true")
+
+    audit = subparsers.add_parser(
+        "audit-conditions",
+        help="build and validate the configured condition matrix locally",
+    )
+    audit.add_argument("--config", required=True, type=Path)
+    audit.add_argument("--output", required=True, type=Path)
     return parser
 
 
@@ -98,6 +108,28 @@ def main(argv: Sequence[str] | None = None) -> None:
                     sort_keys=True,
                 )
                 + "\n"
+            )
+            return
+        if args.command == "audit-conditions":
+            documents = SyntheticGenerator(config.experiment.seed).generate(
+                config.dataset.max_documents,
+                split=config.experiment.split.value,
+            )
+            matrix = build_condition_matrix(
+                documents,
+                conditions=tuple(config.conditions),
+                budget=config.compression.budget,
+                seed=config.experiment.seed,
+                tokenizer=WhitespaceTokenCounter(),
+            )
+            write_condition_audit(args.output, matrix)
+            payload = {
+                "compressions": len(matrix.compressions),
+                "inputs": len(matrix.inputs),
+                "output": str(args.output.resolve()),
+            }
+            sys.stdout.write(
+                json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
             )
             return
         parser.error(f"unsupported command: {args.command}")

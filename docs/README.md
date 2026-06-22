@@ -10,7 +10,7 @@
 | 1 | Synthetic rule graph와 executor | 완료 | [Phase 1](phases/phase-1-synthetic-engine.md) |
 | 2 | ISM 표현, parser, intervention | 완료 | [Phase 2](phases/phase-2-representation.md) |
 | 3 | Inference pipeline과 resume/cache | 완료 | [Phase 3](phases/phase-3-inference.md) |
-| 4 | Ablation orchestration | 대기 | - |
+| 4 | Ablation orchestration | 완료 | [Phase 4](phases/phase-4-conditions.md) |
 | 5 | Fixed-Budget orchestration | 대기 | - |
 | 6 | Reuse와 cache 비용 계산 | 대기 | - |
 | 7 | Swap LoRA pipeline | 대기 | - |

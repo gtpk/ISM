@@ -27,6 +27,7 @@ def test_p0_reg_001_help_succeeds() -> None:
     assert "dry-run" in result.stdout
     assert "generate-synthetic" in result.stdout
     assert "run-mock" in result.stdout
+    assert "audit-conditions" in result.stdout
 
 
 def test_p0_reg_001_validate_config_succeeds() -> None:
@@ -97,3 +98,21 @@ def test_p3_int_001_run_mock_end_to_end(tmp_path: Path) -> None:
     assert (output / "predictions.jsonl").exists()
     assert (output / "metrics.json").exists()
     assert (output / "manifest.json").exists()
+
+
+def test_p4_cli_001_condition_audit(tmp_path: Path) -> None:
+    output = tmp_path / "condition-audit.json"
+
+    result = run_cli(
+        "audit-conditions",
+        "--config",
+        str(SMOKE_CONFIG),
+        "--output",
+        str(output),
+    )
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["inputs"] == 18
+    assert payload["compressions"] == 3
+    assert output.exists()
