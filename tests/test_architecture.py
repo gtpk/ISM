@@ -4,15 +4,19 @@ import ast
 from pathlib import Path
 
 FORBIDDEN_IMPORTS = {"bitsandbytes", "google.colab", "transformers"}
-PURE_MODULE_DIRS = {"config.py", "planning.py"}
+PURE_MODULE_PATHS = {"config.py", "planning.py", "data", "representation"}
 
 
 def test_p0_arc_001_pure_modules_do_not_import_gpu_or_colab_packages() -> None:
     package_root = Path("src/ism")
     violations: list[str] = []
 
-    for relative_path in PURE_MODULE_DIRS:
-        path = package_root / relative_path
+    paths: list[Path] = []
+    for relative_path in PURE_MODULE_PATHS:
+        candidate = package_root / relative_path
+        paths.extend(candidate.rglob("*.py") if candidate.is_dir() else [candidate])
+
+    for path in paths:
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
         for node in ast.walk(tree):
             imported: list[str] = []
