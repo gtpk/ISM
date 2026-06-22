@@ -11,6 +11,7 @@ from pydantic import ValidationError
 from ism.config import load_config
 from ism.data.generator import SyntheticGenerator
 from ism.data.io import write_documents
+from ism.evaluation.reporting import report_from_artifacts
 from ism.experiments.audit import write_budget_audit, write_condition_audit
 from ism.experiments.budgets import (
     DeterministicRepresentationProducer,
@@ -19,7 +20,7 @@ from ism.experiments.budgets import (
 from ism.experiments.conditions import build_condition_matrix
 from ism.inference.mock import MockTextGenerator
 from ism.inference.pipeline import run_mock_pipeline
-from ism.planning import build_execution_plan
+from ism.planning import build_execution_plan, estimate_server_requirements
 from ism.representation.tokenizer import WhitespaceTokenCounter
 
 
@@ -68,6 +69,24 @@ def build_parser() -> argparse.ArgumentParser:
     )
     budget_audit.add_argument("--config", required=True, type=Path)
     budget_audit.add_argument("--output", required=True, type=Path)
+
+    report = subparsers.add_parser(
+        "report-run",
+        help="render metrics from prediction and condition audit artifacts",
+    )
+    report.add_argument("--config", required=True, type=Path)
+    report.add_argument("--predictions", required=True, type=Path)
+    report.add_argument("--condition-audit", required=True, type=Path)
+    report.add_argument("--output", required=True, type=Path)
+
+    estimate = subparsers.add_parser(
+        "estimate-server",
+        help="estimate worst-case GPU time and storage before a server run",
+    )
+    estimate.add_argument("--config", required=True, type=Path)
+    estimate.add_argument("--calls-per-second", required=True, type=float)
+    estimate.add_argument("--bytes-per-call", required=True, type=int)
+    estimate.add_argument("--approved-gpu-hours", required=True, type=float)
     return parser
 
 
@@ -186,6 +205,38 @@ def main(argv: Sequence[str] | None = None) -> None:
             }
             sys.stdout.write(
                 json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+            )
+            return
+        if args.command == "report-run":
+            metrics = report_from_artifacts(
+                predictions_path=args.predictions,
+                condition_audit_path=args.condition_audit,
+                output_dir=args.output,
+                run_id=config.experiment.name,
+            )
+            payload = {
+                "conditions": len(metrics),
+                "output": str(args.output.resolve()),
+            }
+            sys.stdout.write(
+                json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+            )
+            return
+        if args.command == "estimate-server":
+            estimate = estimate_server_requirements(
+                build_execution_plan(config),
+                calls_per_second=args.calls_per_second,
+                bytes_per_call=args.bytes_per_call,
+                approved_gpu_hours=args.approved_gpu_hours,
+            )
+            sys.stdout.write(
+                json.dumps(
+                    estimate.to_dict(),
+                    ensure_ascii=False,
+                    indent=2,
+                    sort_keys=True,
+                )
+                + "\n"
             )
             return
         parser.error(f"unsupported command: {args.command}")

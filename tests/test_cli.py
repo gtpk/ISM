@@ -29,6 +29,8 @@ def test_p0_reg_001_help_succeeds() -> None:
     assert "run-mock" in result.stdout
     assert "audit-conditions" in result.stdout
     assert "audit-budgets" in result.stdout
+    assert "report-run" in result.stdout
+    assert "estimate-server" in result.stdout
 
 
 def test_p0_reg_001_validate_config_succeeds() -> None:
@@ -135,3 +137,67 @@ def test_p5_cli_001_budget_audit(tmp_path: Path) -> None:
     assert payload["artifacts"] == 3
     assert payload["invalid"] == 0
     assert output.exists()
+
+
+def test_p9_cli_001_report_from_local_artifacts(tmp_path: Path) -> None:
+    run_dir = tmp_path / "mock-run"
+    audit_path = tmp_path / "condition-audit.json"
+    report_dir = tmp_path / "report"
+    assert (
+        run_cli(
+            "run-mock",
+            "--config",
+            str(SMOKE_CONFIG),
+            "--output",
+            str(run_dir),
+        ).returncode
+        == 0
+    )
+    assert (
+        run_cli(
+            "audit-conditions",
+            "--config",
+            str(SMOKE_CONFIG),
+            "--output",
+            str(audit_path),
+        ).returncode
+        == 0
+    )
+
+    result = run_cli(
+        "report-run",
+        "--config",
+        str(SMOKE_CONFIG),
+        "--predictions",
+        str(run_dir / "predictions.jsonl"),
+        "--condition-audit",
+        str(audit_path),
+        "--output",
+        str(report_dir),
+    )
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["conditions"] == 3
+    assert (report_dir / "metrics.json").exists()
+    assert (report_dir / "metrics.csv").exists()
+    assert (report_dir / "metrics.md").exists()
+
+
+def test_cost_cli_001_server_estimate() -> None:
+    result = run_cli(
+        "estimate-server",
+        "--config",
+        str(SMOKE_CONFIG),
+        "--calls-per-second",
+        "0.2",
+        "--bytes-per-call",
+        "100000",
+        "--approved-gpu-hours",
+        "1",
+    )
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["estimated_gpu_hours"] == 0.0875
+    assert payload["estimated_storage_bytes"] == 6_300_000

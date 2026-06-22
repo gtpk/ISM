@@ -24,6 +24,18 @@ class ExecutionPlan:
         return asdict(self)
 
 
+@dataclass(frozen=True)
+class ServerEstimate:
+    worst_case_calls: int
+    calls_per_second: float
+    estimated_gpu_hours: float
+    estimated_storage_bytes: int
+    approved_gpu_hours: float
+
+    def to_dict(self) -> dict[str, int | float]:
+        return asdict(self)
+
+
 def build_execution_plan(config: AppConfig) -> ExecutionPlan:
     documents = config.dataset.max_documents
     questions = documents * config.dataset.questions_per_document
@@ -55,6 +67,34 @@ def build_execution_plan(config: AppConfig) -> ExecutionPlan:
         max_new_tokens_per_call=config.execution_budget.max_new_tokens,
         max_gpu_hours=config.execution_budget.max_gpu_hours,
     )
+
+
+def estimate_server_requirements(
+    plan: ExecutionPlan,
+    *,
+    calls_per_second: float,
+    bytes_per_call: int,
+    approved_gpu_hours: float,
+) -> ServerEstimate:
+    if calls_per_second <= 0:
+        raise ValueError("calls_per_second must be positive")
+    if bytes_per_call < 0:
+        raise ValueError("bytes_per_call must not be negative")
+    if approved_gpu_hours <= 0:
+        raise ValueError("approved_gpu_hours must be positive")
+    estimate = ServerEstimate(
+        worst_case_calls=plan.worst_case_calls,
+        calls_per_second=calls_per_second,
+        estimated_gpu_hours=plan.worst_case_calls / calls_per_second / 3600,
+        estimated_storage_bytes=plan.worst_case_calls * bytes_per_call,
+        approved_gpu_hours=approved_gpu_hours,
+    )
+    if estimate.estimated_gpu_hours > approved_gpu_hours:
+        raise ValueError(
+            f"estimated GPU time {estimate.estimated_gpu_hours:.3f}h exceeds "
+            f"approved quota {approved_gpu_hours:.3f}h"
+        )
+    return estimate
 
 
 def _compression_family(condition: str) -> str | None:

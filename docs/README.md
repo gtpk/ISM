@@ -15,7 +15,7 @@
 | 6 | Reuse와 cache 비용 계산 | 완료 | [Phase 6](phases/phase-6-cache-cost.md) |
 | 7 | Swap LoRA local contract | 완료 | [Phase 7](phases/phase-7-swap-training.md) |
 | 8 | QASPER adapter | 완료 | [Phase 8](phases/phase-8-qasper.md) |
-| 9 | Main run, 통계, 보고 | 대기 | - |
+| 9 | 통계·보고·서버 진입 | 로컬 완료, Colab S0 차단 | [Phase 9](phases/phase-9-local-validation.md) |
 
 ## 문서 구분
 
