@@ -1280,8 +1280,8 @@ python scripts/run_experiment.py --config configs/experiments/smoke.yaml
 
 ## 16. 당장 실행할 체크리스트
 
-- [ ] Python 버전과 패키지 관리 방식 확정
-- [ ] 기본 디렉터리와 package 생성
+- [x] Python 버전과 패키지 관리 방식 확정
+- [x] 기본 디렉터리와 package 생성
 - [ ] 데이터 schema 작성
 - [ ] rule graph와 executor 작성
 - [ ] synthetic fixture 20개 작성
@@ -1299,3 +1299,31 @@ python scripts/run_experiment.py --config configs/experiments/smoke.yaml
 - [ ] 제한 pilot 비용 보정
 - [ ] Ablation pilot 결과 확인
 - [ ] Go/Revise 결정 기록
+
+## 17. Phase 종료 문서화 규칙
+
+각 Phase는 코드와 TC가 끝났다는 이유만으로 종료하지 않는다. 완료 보고서가
+`docs/phases/phase-<N>-<name>.md`에 작성되고 `docs/README.md`의 상태가 갱신되어야 종료된다.
+
+Phase 완료 보고서에는 다음 항목을 반드시 포함한다.
+
+1. Phase 목표와 실제 구현 범위
+2. 추가·변경된 주요 파일
+3. 통과한 Blocking TC와 실행 명령
+4. 정적 검사, 타입 검사, 테스트 결과
+5. 비용 dry-run 또는 서버 사용 여부
+6. 구현 중 발견한 모순과 수정 내용
+7. 알려진 제한과 의도적으로 미룬 작업
+8. 다음 Phase 진입 조건
+9. 재현 절차
+10. 문서 작성 시점의 Git 상태 또는 commit
+
+문서화 원칙:
+
+- 논문 가설의 성공 여부와 코드 완료 여부를 섞지 않는다.
+- 실행하지 않은 검증을 통과했다고 기록하지 않는다.
+- 숫자는 터미널 출력이나 artifact에서 확인된 값만 기록한다.
+- 실패 후 수정한 내용도 남겨 같은 오류가 반복되지 않게 한다.
+- Colab/GPU를 사용했다면 runtime, 실행 시간, 호출 수, 비용 상한을 기록한다.
+- Phase 문서는 완료 당시의 기록으로 유지하고, 후속 변경은 별도 정정 절에 추가한다.
+- 다음 Phase를 시작하기 전에 이전 Phase 문서의 미해결 Blocking 항목이 0개인지 확인한다.
