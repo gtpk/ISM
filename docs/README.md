@@ -16,6 +16,7 @@
 | 7 | Swap LoRA local contract | 완료 | [Phase 7](phases/phase-7-swap-training.md) |
 | 8 | QASPER adapter | 완료 | [Phase 8](phases/phase-8-qasper.md) |
 | 9 | 통계·보고·서버 진입 | 로컬 완료, Colab S0 차단 | [Phase 9](phases/phase-9-local-validation.md) |
+| 3b | Transformers GPU backend (`ism run`, S1 준비) | 로컬 완료, Colab S1 대기(GPU 런타임 필요) | [Phase 3b](phases/phase-3b-transformers-backend.md) |
 
 ## 문서 구분
 
