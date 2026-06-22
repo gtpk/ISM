@@ -28,6 +28,7 @@ def test_p0_reg_001_help_succeeds() -> None:
     assert "generate-synthetic" in result.stdout
     assert "run-mock" in result.stdout
     assert "audit-conditions" in result.stdout
+    assert "audit-budgets" in result.stdout
 
 
 def test_p0_reg_001_validate_config_succeeds() -> None:
@@ -115,4 +116,22 @@ def test_p4_cli_001_condition_audit(tmp_path: Path) -> None:
     payload = json.loads(result.stdout)
     assert payload["inputs"] == 18
     assert payload["compressions"] == 3
+    assert output.exists()
+
+
+def test_p5_cli_001_budget_audit(tmp_path: Path) -> None:
+    output = tmp_path / "budget-audit.json"
+
+    result = run_cli(
+        "audit-budgets",
+        "--config",
+        str(SMOKE_CONFIG),
+        "--output",
+        str(output),
+    )
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["artifacts"] == 3
+    assert payload["invalid"] == 0
     assert output.exists()

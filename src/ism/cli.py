@@ -11,7 +11,11 @@ from pydantic import ValidationError
 from ism.config import load_config
 from ism.data.generator import SyntheticGenerator
 from ism.data.io import write_documents
-from ism.experiments.audit import write_condition_audit
+from ism.experiments.audit import write_budget_audit, write_condition_audit
+from ism.experiments.budgets import (
+    DeterministicRepresentationProducer,
+    build_budget_matrix,
+)
 from ism.experiments.conditions import build_condition_matrix
 from ism.inference.mock import MockTextGenerator
 from ism.inference.pipeline import run_mock_pipeline
@@ -57,6 +61,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     audit.add_argument("--config", required=True, type=Path)
     audit.add_argument("--output", required=True, type=Path)
+
+    budget_audit = subparsers.add_parser(
+        "audit-budgets",
+        help="build and validate the configured method-budget matrix locally",
+    )
+    budget_audit.add_argument("--config", required=True, type=Path)
+    budget_audit.add_argument("--output", required=True, type=Path)
     return parser
 
 
@@ -126,6 +137,51 @@ def main(argv: Sequence[str] | None = None) -> None:
             payload = {
                 "compressions": len(matrix.compressions),
                 "inputs": len(matrix.inputs),
+                "output": str(args.output.resolve()),
+            }
+            sys.stdout.write(
+                json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+            )
+            return
+        if args.command == "audit-budgets":
+            documents = SyntheticGenerator(config.experiment.seed).generate(
+                config.dataset.max_documents,
+                split=config.experiment.split.value,
+            )
+            tokenizer = WhitespaceTokenCounter()
+            methods = tuple(
+                dict.fromkeys(
+                    "ism"
+                    if condition
+                    in {
+                        "full_symbol_dict",
+                        "symbol_only",
+                        "corrupted_dict",
+                        "random_symbol",
+                        "unseen_swap_dict",
+                        "unseen_swap_no_dict",
+                    }
+                    else condition
+                    for condition in config.conditions
+                    if condition != "full_context"
+                )
+            )
+            artifacts = build_budget_matrix(
+                documents,
+                methods=methods,
+                budgets=(config.compression.budget,),
+                tokenizer=tokenizer,
+                tokenizer_revision=config.model.tokenizer_revision,
+                max_attempts=config.compression.max_regeneration_attempts,
+                producer=DeterministicRepresentationProducer(
+                    tokenizer,
+                    seed=config.experiment.seed,
+                ),
+            )
+            write_budget_audit(args.output, artifacts)
+            payload = {
+                "artifacts": len(artifacts),
+                "invalid": sum(not item.valid for item in artifacts),
                 "output": str(args.output.resolve()),
             }
             sys.stdout.write(

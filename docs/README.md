@@ -11,7 +11,7 @@
 | 2 | ISM 표현, parser, intervention | 완료 | [Phase 2](phases/phase-2-representation.md) |
 | 3 | Inference pipeline과 resume/cache | 완료 | [Phase 3](phases/phase-3-inference.md) |
 | 4 | Ablation orchestration | 완료 | [Phase 4](phases/phase-4-conditions.md) |
-| 5 | Fixed-Budget orchestration | 대기 | - |
+| 5 | Fixed-Budget orchestration | 완료 | [Phase 5](phases/phase-5-budgets.md) |
 | 6 | Reuse와 cache 비용 계산 | 대기 | - |
 | 7 | Swap LoRA pipeline | 대기 | - |
 | 8 | QASPER adapter | 대기 | - |
