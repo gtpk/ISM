@@ -40,6 +40,7 @@ class CompressionAuditReport:
     mean_relations_structure: float
     mean_corruption_overlap: float
     corruption_preserves_content: float
+    flip_changes_content: float
     majority_baseline: dict[str, float]
 
 
@@ -113,6 +114,7 @@ def run_compression_audit(
         mean_relations_structure=structure.mean_relations_structure,
         mean_corruption_overlap=structure.mean_corruption_overlap,
         corruption_preserves_content=structure.corruption_preserves_content,
+        flip_changes_content=structure.flip_changes_content,
         majority_baseline=majority_baseline(documents),
     )
     (output_dir / "compression_audit.json").write_text(

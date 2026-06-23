@@ -35,6 +35,15 @@ def test_compression_generation_budget_defaults_and_overrides() -> None:
     assert ablation.compression.budget == 128  # final ISM bound unchanged
 
 
+def test_execution_plan_handles_new_ism_conditions() -> None:
+    # flipped_dict / blank_dict must be recognized by the planner (dry-run).
+    from ism.planning import build_execution_plan
+
+    config = load_config(ROOT / "configs/experiments/ablation_qwen7b.yaml")
+    plan = build_execution_plan(config).to_dict()
+    assert plan["nominal_calls"] > 0
+
+
 def test_p0_cfg_001_unknown_key_reports_field_path() -> None:
     raw = load_raw()
     raw["unknown_section"] = {"enabled": True}

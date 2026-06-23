@@ -104,6 +104,8 @@ Condition = Literal[
     "full_symbol_dict",
     "symbol_only",
     "corrupted_dict",
+    "flipped_dict",
+    "blank_dict",
     "random_symbol",
     "model_summary",
     "keyword_extract",

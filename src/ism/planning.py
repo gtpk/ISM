@@ -104,6 +104,8 @@ def _compression_family(condition: str) -> str | None:
         "full_symbol_dict",
         "symbol_only",
         "corrupted_dict",
+        "flipped_dict",
+        "blank_dict",
         "random_symbol",
         "unseen_swap_dict",
         "unseen_swap_no_dict",

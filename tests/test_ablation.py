@@ -116,11 +116,15 @@ def test_llm_backend_uses_llm_compressor(tmp_path: Path) -> None:
     assert summary.compression.compressed == config.dataset.max_documents
     assert summary.compression.failures == 0
     assert summary.compression.mean_attempts == 1.0
-    # All 5 conditions are still produced from the LLM-generated ISM.
+    # All 7 conditions are produced from the LLM-generated ISM.
     assert {metric.condition for metric in summary.conditions} == {
         "full_context",
         "full_symbol_dict",
         "symbol_only",
         "corrupted_dict",
+        "flipped_dict",
+        "blank_dict",
         "random_symbol",
     }
+    # Both label-binding and semantic-content contrasts are reported.
+    assert {c.name for c in summary.contrasts} == {"delta_map", "delta_map_strong", "delta_symbol"}

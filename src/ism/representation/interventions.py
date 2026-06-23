@@ -24,6 +24,61 @@ def remove_dictionary(source: ISMRepresentation) -> InterventionResult:
     )
 
 
+# Conclusion outcomes are written in upper/capitalized case (risk = HIGH,
+# review = True) while condition values are lower case (marker_a = high), so a
+# case-sensitive flip targets only the answer-bearing conclusions.
+_CONCLUSION_FLIP = {
+    "HIGH": "LOW",
+    "LOW": "HIGH",
+    "MEDIUM": "LOW",
+    "True": "False",
+    "False": "True",
+    "TRUE": "FALSE",
+    "FALSE": "TRUE",
+}
+_CONCLUSION_PATTERN = re.compile(
+    r"(?<![A-Za-z0-9_])(" + "|".join(_CONCLUSION_FLIP) + r")(?![A-Za-z0-9_])"
+)
+
+
+def _flip_conclusion_text(text: str) -> str:
+    return _CONCLUSION_PATTERN.sub(lambda match: _CONCLUSION_FLIP[match.group(1)], text)
+
+
+def flip_conclusions(source: ISMRepresentation) -> InterventionResult:
+    """Counterfactual dictionary: invert conclusion outcomes (HIGH<->LOW,
+    MEDIUM->LOW, True<->False) while keeping conditions and relations.
+
+    Unlike derangement (which preserves the definition multiset), this changes
+    the answer-bearing content, so it probes whether the dictionary *semantics*
+    actually support the answer.
+    """
+    flipped = tuple(
+        SymbolDefinition(label=item.label, definition=_flip_conclusion_text(item.definition))
+        for item in source.dictionary
+    )
+    return InterventionResult(
+        representation=source.model_copy(update={"dictionary": flipped}),
+        mapping=tuple((item.label, item.label) for item in source.dictionary),
+        seed=None,
+    )
+
+
+def blank_dictionary(
+    source: ISMRepresentation, *, placeholder: str = "redacted"
+) -> InterventionResult:
+    """Strong dictionary removal: keep labels and relations but blank every
+    definition. A sanity probe between Full Symbol + Dict and Symbol Only."""
+    blanked = tuple(
+        SymbolDefinition(label=item.label, definition=placeholder) for item in source.dictionary
+    )
+    return InterventionResult(
+        representation=source.model_copy(update={"dictionary": blanked}),
+        mapping=(),
+        seed=None,
+    )
+
+
 def corrupt_dictionary(source: ISMRepresentation, *, seed: int) -> InterventionResult:
     if len(source.dictionary) < 2:
         raise ValueError("dictionary corruption requires at least two definitions")

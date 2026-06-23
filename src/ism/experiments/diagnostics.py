@@ -21,7 +21,7 @@ from dataclasses import dataclass
 
 from ism.data.generator import GeneratedDocument
 from ism.data.render import render_rule
-from ism.representation.interventions import corrupt_dictionary
+from ism.representation.interventions import corrupt_dictionary, flip_conclusions
 from ism.representation.models import ISMRepresentation
 
 # Answer-bearing tokens the synthetic task turns on.
@@ -63,6 +63,19 @@ def corruption_strength(representation: ISMRepresentation, *, seed: int) -> Corr
         definitions_multiset_preserved=sorted(orig_defs) == sorted(corr_defs),
         mean_per_label_overlap=sum(overlaps) / len(overlaps) if overlaps else 1.0,
         answer_tokens_preserved=_answer_tokens(orig_defs) == _answer_tokens(corr_defs),
+    )
+
+
+def flip_changes_content(representation: ISMRepresentation) -> bool:
+    """True if conclusion-flip actually changes at least one definition.
+
+    Contrast with `corruption_strength.definitions_multiset_preserved`: flip is a
+    valid semantic-content probe only when it changes the dictionary content.
+    """
+    flipped = flip_conclusions(representation).representation
+    return any(
+        original.definition != changed.definition
+        for original, changed in zip(representation.dictionary, flipped.dictionary, strict=True)
     )
 
 
@@ -141,6 +154,7 @@ class IsmStructureReport:
     documents: int
     mean_corruption_overlap: float
     corruption_preserves_content: float  # fraction of docs where defs multiset preserved
+    flip_changes_content: float  # fraction of docs where conclusion-flip alters definitions
     mean_relations_structure: float
     mean_self_containment: float
 
@@ -154,6 +168,7 @@ def analyze_isms(
         raise ValueError("no representations to analyze")
     overlaps: list[float] = []
     preserved = 0
+    flips_changed = 0
     structure: list[float] = []
     self_contained: list[float] = []
     for representation in representations:
@@ -161,6 +176,7 @@ def analyze_isms(
             strength = corruption_strength(representation, seed=seed)
             overlaps.append(strength.mean_per_label_overlap)
             preserved += int(strength.definitions_multiset_preserved)
+        flips_changed += int(flip_changes_content(representation))
         structure.append(relations_structure_score(representation))
         self_contained.append(definition_self_containment(representation))
     n = len(representations)
@@ -168,6 +184,7 @@ def analyze_isms(
         documents=n,
         mean_corruption_overlap=sum(overlaps) / len(overlaps) if overlaps else 1.0,
         corruption_preserves_content=preserved / len(overlaps) if overlaps else 1.0,
+        flip_changes_content=flips_changed / n,
         mean_relations_structure=sum(structure) / n,
         mean_self_containment=sum(self_contained) / n,
     )
@@ -180,6 +197,7 @@ __all__ = [
     "analyze_isms",
     "corruption_strength",
     "definition_self_containment",
+    "flip_changes_content",
     "majority_baseline",
     "relations_structure_score",
     "rule_coverage",

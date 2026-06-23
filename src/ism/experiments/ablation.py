@@ -29,8 +29,12 @@ from ism.representation.models import ISMRepresentation
 from ism.representation.tokenizer import WhitespaceTokenCounter
 
 # Pre-registered contrasts (paper 6.1): (name, left, right).
+# - delta_map: label-binding sensitivity (derangement preserves the rule set).
+# - delta_map_strong: dictionary semantic-content sensitivity (conclusions flipped).
+# - delta_symbol: symbol structure vs length-matched random noise.
 _CONTRASTS = (
     ("delta_map", "full_symbol_dict", "corrupted_dict"),
+    ("delta_map_strong", "full_symbol_dict", "flipped_dict"),
     ("delta_symbol", "symbol_only", "random_symbol"),
 )
 

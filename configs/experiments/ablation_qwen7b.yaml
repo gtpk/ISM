@@ -38,7 +38,9 @@ conditions:
   - full_context
   - full_symbol_dict
   - symbol_only
-  - corrupted_dict
+  - corrupted_dict     # derangement: label-binding probe
+  - flipped_dict       # conclusion flip: semantic-content probe
+  - blank_dict         # blanked definitions: sanity probe
   - random_symbol
 
 output:
@@ -50,7 +52,7 @@ execution_budget:
   stage: S2
   max_documents: 20
   max_questions_per_document: 2
-  max_conditions: 5
+  max_conditions: 7
   max_budgets: 1
   max_seeds: 1
   max_generation_attempts: 3

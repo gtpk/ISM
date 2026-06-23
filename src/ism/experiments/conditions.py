@@ -8,7 +8,9 @@ from ism.config import Condition
 from ism.data.generator import GeneratedDocument
 from ism.data.render import render_rule
 from ism.representation.interventions import (
+    blank_dictionary,
     corrupt_dictionary,
+    flip_conclusions,
     random_symbol_control,
     remove_dictionary,
 )
@@ -250,6 +252,12 @@ def _condition_text(
     if condition == "corrupted_dict":
         value = corrupt_dictionary(ism.representation, seed=seed).representation
         return serialize_ism(value), ism.compression_id
+    if condition == "flipped_dict":
+        value = flip_conclusions(ism.representation).representation
+        return serialize_ism(value), ism.compression_id
+    if condition == "blank_dict":
+        value = blank_dictionary(ism.representation).representation
+        return serialize_ism(value), ism.compression_id
     if condition == "random_symbol":
         value = random_symbol_control(
             ism.representation,
@@ -272,6 +280,8 @@ def _method_for_condition(condition: Condition) -> str:
         "full_symbol_dict",
         "symbol_only",
         "corrupted_dict",
+        "flipped_dict",
+        "blank_dict",
         "random_symbol",
         "unseen_swap_dict",
         "unseen_swap_no_dict",
