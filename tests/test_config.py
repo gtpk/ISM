@@ -40,8 +40,8 @@ def test_execution_plan_handles_new_ism_conditions() -> None:
     from ism.planning import build_execution_plan
 
     config = load_config(ROOT / "configs/experiments/ablation_qwen7b.yaml")
-    plan = build_execution_plan(config).to_dict()
-    assert plan["nominal_calls"] > 0
+    calls = build_execution_plan(config).to_dict()["nominal_calls"]
+    assert isinstance(calls, int) and calls > 0
 
 
 def test_p0_cfg_001_unknown_key_reports_field_path() -> None:
