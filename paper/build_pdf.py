@@ -1,373 +1,601 @@
 #!/usr/bin/env python3
-"""Generate a dependency-free PDF preview of the ISM mixed-results paper.
+"""Build a compact two-column PDF preview for the ISM mixed-results paper.
 
-The workspace does not include a TeX engine, so this script writes a compact
-PDF directly using standard PDF text and drawing operators.  The authoritative
-paper source remains main.tex.
+The authoritative source is main.tex.  This renderer exists because the local
+workspace does not include a TeX engine.  It uses reportlab from the bundled
+Codex runtime and deliberately targets a polished two-page extended-abstract
+layout.
 """
 
 from __future__ import annotations
 
-import math
-import textwrap
-from dataclasses import dataclass, field
 from pathlib import Path
 
-
-PAGE_W = 612
-PAGE_H = 792
-MARGIN = 54
-
-
-def esc(text: str) -> str:
-    return text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
-
-
-@dataclass
-class Page:
-    ops: list[str] = field(default_factory=list)
-
-    def text(self, x: float, y: float, text: str, size: int = 10, font: str = "F1") -> None:
-        self.ops.append(f"BT /{font} {size} Tf {x:.2f} {y:.2f} Td ({esc(text)}) Tj ET")
-
-    def line(self, x1: float, y1: float, x2: float, y2: float, width: float = 0.6) -> None:
-        self.ops.append(f"{width:.2f} w {x1:.2f} {y1:.2f} m {x2:.2f} {y2:.2f} l S")
-
-    def rect(self, x: float, y: float, w: float, h: float, gray: float | None = None) -> None:
-        if gray is not None:
-            self.ops.append(f"{gray:.2f} g {x:.2f} {y:.2f} {w:.2f} {h:.2f} re f 0 g")
-        else:
-            self.ops.append(f"{x:.2f} {y:.2f} {w:.2f} {h:.2f} re S")
-
-    def fill_rect_rgb(self, x: float, y: float, w: float, h: float, r: float, g: float, b: float) -> None:
-        self.ops.append(f"{r:.2f} {g:.2f} {b:.2f} rg {x:.2f} {y:.2f} {w:.2f} {h:.2f} re f 0 0 0 rg")
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_LEFT
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.units import inch
+from reportlab.platypus import (
+    BaseDocTemplate,
+    Flowable,
+    FrameBreak,
+    Frame,
+    PageTemplate,
+    PageBreak,
+    Paragraph,
+    Spacer,
+    Table,
+    TableStyle,
+)
 
 
-class Document:
-    def __init__(self) -> None:
-        self.pages: list[Page] = []
+OUT = Path(__file__).with_name("ism-mixed-results.pdf")
+PAGE_W, PAGE_H = letter
+MARGIN_X = 0.55 * inch
+MARGIN_Y = 0.48 * inch
+GAP = 0.22 * inch
+COL_W = (PAGE_W - 2 * MARGIN_X - GAP) / 2
 
-    def page(self) -> Page:
-        page = Page()
-        self.pages.append(page)
-        return page
 
-    def write(self, path: Path) -> None:
-        objects: list[bytes] = []
+def styles() -> dict[str, ParagraphStyle]:
+    base = getSampleStyleSheet()
+    return {
+        "title": ParagraphStyle(
+            "title",
+            parent=base["Title"],
+            fontName="Helvetica-Bold",
+            fontSize=15.5,
+            leading=17.5,
+            alignment=TA_CENTER,
+            spaceAfter=5,
+        ),
+        "subtitle": ParagraphStyle(
+            "subtitle",
+            parent=base["Normal"],
+            fontName="Helvetica",
+            fontSize=8.5,
+            leading=10,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor("#555555"),
+        ),
+        "abstract_label": ParagraphStyle(
+            "abstract_label",
+            parent=base["Normal"],
+            fontName="Helvetica-Bold",
+            fontSize=8.2,
+            leading=9.5,
+            alignment=TA_CENTER,
+            spaceAfter=2,
+        ),
+        "abstract": ParagraphStyle(
+            "abstract",
+            parent=base["Normal"],
+            fontName="Times-Roman",
+            fontSize=8.0,
+            leading=9.6,
+            alignment=TA_JUSTIFY,
+        ),
+        "h1": ParagraphStyle(
+            "h1",
+            parent=base["Heading2"],
+            fontName="Helvetica-Bold",
+            fontSize=9.2,
+            leading=10.5,
+            spaceBefore=5,
+            spaceAfter=2,
+            keepWithNext=True,
+        ),
+        "body": ParagraphStyle(
+            "body",
+            parent=base["BodyText"],
+            fontName="Times-Roman",
+            fontSize=8.15,
+            leading=9.45,
+            alignment=TA_JUSTIFY,
+            spaceAfter=2.3,
+        ),
+        "small": ParagraphStyle(
+            "small",
+            parent=base["BodyText"],
+            fontName="Times-Roman",
+            fontSize=7.4,
+            leading=8.4,
+            alignment=TA_JUSTIFY,
+            spaceAfter=2,
+        ),
+        "formula": ParagraphStyle(
+            "formula",
+            parent=base["BodyText"],
+            fontName="Courier",
+            fontSize=6.6,
+            leading=7.4,
+            leftIndent=4,
+            spaceBefore=1,
+            spaceAfter=2,
+        ),
+        "caption": ParagraphStyle(
+            "caption",
+            parent=base["BodyText"],
+            fontName="Helvetica",
+            fontSize=6.9,
+            leading=7.8,
+            textColor=colors.HexColor("#333333"),
+            spaceBefore=2,
+            spaceAfter=3,
+        ),
+        "ref": ParagraphStyle(
+            "ref",
+            parent=base["BodyText"],
+            fontName="Times-Roman",
+            fontSize=6.8,
+            leading=7.6,
+            leftIndent=8,
+            firstLineIndent=-8,
+            spaceAfter=1.4,
+        ),
+        "table": ParagraphStyle(
+            "table",
+            parent=base["BodyText"],
+            fontName="Helvetica",
+            fontSize=6.4,
+            leading=7.2,
+            alignment=TA_LEFT,
+        ),
+    }
 
-        def add(obj: str | bytes) -> int:
-            data = obj.encode("latin-1") if isinstance(obj, str) else obj
-            objects.append(data)
-            return len(objects)
 
-        font_helv = add("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>")
-        font_bold = add("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>")
-        font_cour = add("<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>")
+S = styles()
 
-        page_ids: list[int] = []
-        for page in self.pages:
-            stream = "\n".join(page.ops).encode("latin-1", "replace")
-            content_id = add(
-                b"<< /Length " + str(len(stream)).encode("ascii") + b" >>\nstream\n" + stream + b"\nendstream"
-            )
-            page_id = add(
-                f"<< /Type /Page /Parent 0 0 R /MediaBox [0 0 {PAGE_W} {PAGE_H}] "
-                f"/Resources << /Font << /F1 {font_helv} 0 R /F2 {font_bold} 0 R /F3 {font_cour} 0 R >> >> "
-                f"/Contents {content_id} 0 R >>"
-            )
-            page_ids.append(page_id)
 
-        kids = " ".join(f"{pid} 0 R" for pid in page_ids)
-        pages_id = add(f"<< /Type /Pages /Kids [{kids}] /Count {len(page_ids)} >>")
+class PipelineFigure(Flowable):
+    def __init__(self, width: float) -> None:
+        super().__init__()
+        self.width = width
+        self.height = 58
 
-        # Patch parent references now that the pages object exists.
-        for pid in page_ids:
-            objects[pid - 1] = objects[pid - 1].replace(b"/Parent 0 0 R", f"/Parent {pages_id} 0 R".encode("ascii"))
+    def draw(self) -> None:
+        c = self.canv
+        labels = ["Long\ndocument", "LLM\ncompressor", "ISM\nS,D,G", "LLM\nreasoner"]
+        box_w = (self.width - 36) / 4
+        y = 18
+        for i, label in enumerate(labels):
+            x = i * (box_w + 12)
+            c.setFillColor(colors.HexColor("#eef3fa"))
+            c.setStrokeColor(colors.HexColor("#4d6f99"))
+            c.roundRect(x, y, box_w, 27, 4, stroke=1, fill=1)
+            c.setFillColor(colors.black)
+            c.setFont("Helvetica-Bold", 5.8)
+            for j, line in enumerate(label.split("\n")):
+                c.drawCentredString(x + box_w / 2, y + 17 - 7 * j, line)
+            if i < len(labels) - 1:
+                ax = x + box_w + 2
+                c.setStrokeColor(colors.HexColor("#555555"))
+                c.line(ax, y + 13.5, ax + 8, y + 13.5)
+                c.line(ax + 8, y + 13.5, ax + 4, y + 16.5)
+                c.line(ax + 8, y + 13.5, ax + 4, y + 10.5)
+        c.setFont("Helvetica", 6.2)
+        c.setFillColor(colors.HexColor("#333333"))
+        c.drawString(0, 4, "Figure 1. Prompt-only ISM: the LLM writes a structured text, and an LLM reads it again.")
 
-        catalog_id = add(f"<< /Type /Catalog /Pages {pages_id} 0 R >>")
 
-        out = bytearray(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
-        offsets = [0]
-        for i, obj in enumerate(objects, 1):
-            offsets.append(len(out))
-            out.extend(f"{i} 0 obj\n".encode("ascii"))
-            out.extend(obj)
-            out.extend(b"\nendobj\n")
-        xref = len(out)
-        out.extend(f"xref\n0 {len(objects)+1}\n".encode("ascii"))
-        out.extend(b"0000000000 65535 f \n")
-        for off in offsets[1:]:
-            out.extend(f"{off:010d} 00000 n \n".encode("ascii"))
-        out.extend(
-            f"trailer << /Size {len(objects)+1} /Root {catalog_id} 0 R >>\nstartxref\n{xref}\n%%EOF\n".encode("ascii")
+class MiniLineChart(Flowable):
+    def __init__(self, width: float) -> None:
+        super().__init__()
+        self.width = width
+        self.height = 78
+
+    def draw(self) -> None:
+        c = self.canv
+        x0, y0 = 18, 18
+        w, h = self.width - 38, 42
+        xs = [128, 256, 512]
+        ys = [0.25, 0.3125, 0.375]
+        c.setFont("Helvetica-Bold", 6.7)
+        c.drawString(0, 67, "Figure 2. Summary minus ISM accuracy gap")
+        c.setStrokeColor(colors.HexColor("#444444"))
+        c.line(x0, y0, x0 + w, y0)
+        c.line(x0, y0, x0, y0 + h)
+        pts = []
+        for x, y in zip(xs, ys):
+            px = x0 + (x - 128) / (512 - 128) * w
+            py = y0 + (y / 0.42) * h
+            pts.append((px, py, x, y))
+        c.setStrokeColor(colors.HexColor("#b33a3a"))
+        c.setLineWidth(1.2)
+        for p1, p2 in zip(pts, pts[1:]):
+            c.line(p1[0], p1[1], p2[0], p2[1])
+        c.setFillColor(colors.HexColor("#b33a3a"))
+        c.setFont("Helvetica", 6)
+        for px, py, x, y in pts:
+            c.circle(px, py, 2.2, fill=1, stroke=0)
+            c.setFillColor(colors.black)
+            c.drawCentredString(px, y0 - 9, str(x))
+            c.drawCentredString(px, py + 5, f"{y:.3f}")
+            c.setFillColor(colors.HexColor("#b33a3a"))
+        c.setFillColor(colors.black)
+        c.setFont("Helvetica", 5.7)
+        c.drawString(x0 + w - 36, y0 - 18, "budget")
+
+
+def p(text: str, style: str = "body") -> Paragraph:
+    return Paragraph(text, S[style])
+
+
+def eq(text: str) -> Paragraph:
+    return Paragraph(text, S["formula"])
+
+
+def section(title: str) -> list[Flowable]:
+    return [Paragraph(title, S["h1"])]
+
+
+def compact_table(rows: list[list[str]], widths: list[float]) -> Table:
+    table = Table(
+        [[Paragraph(cell, S["table"]) for cell in row] for row in rows],
+        colWidths=widths,
+        hAlign="LEFT",
+        repeatRows=1,
+    )
+    table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e9edf3")),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#c7c7c7")),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("TOPPADDING", (0, 0), (-1, -1), 2.2),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 2.2),
+                ("LEFTPADDING", (0, 0), (-1, -1), 2.3),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 2.3),
+            ]
         )
-        path.write_bytes(out)
+    )
+    return table
 
 
-def wrapped(page: Page, x: float, y: float, text: str, width: int = 88, size: int = 10, leading: int = 13) -> float:
-    for para in text.split("\n"):
-        if not para.strip():
-            y -= leading
-            continue
-        for line in textwrap.wrap(para, width=width):
-            page.text(x, y, line, size=size)
-            y -= leading
-    return y
+def first_page(canvas, doc) -> None:  # noqa: ANN001
+    canvas.saveState()
+    title = Paragraph(
+        "Inspectable Symbolic Compression for Long-Context Reasoning:<br/>A Mixed-Results Study",
+        S["title"],
+    )
+    title.wrapOn(canvas, PAGE_W - 2 * MARGIN_X, 40)
+    title.drawOn(canvas, MARGIN_X, PAGE_H - 58)
+    subtitle = Paragraph("Anonymous authors - English short-paper preview generated from the local study report", S["subtitle"])
+    subtitle.wrapOn(canvas, PAGE_W - 2 * MARGIN_X, 14)
+    subtitle.drawOn(canvas, MARGIN_X, PAGE_H - 78)
+    canvas.setStrokeColor(colors.HexColor("#777777"))
+    canvas.line(MARGIN_X, PAGE_H - 86, PAGE_W - MARGIN_X, PAGE_H - 86)
+    canvas.restoreState()
 
 
-def heading(page: Page, y: float, text: str) -> float:
-    page.text(MARGIN, y, text, size=14, font="F2")
-    page.line(MARGIN, y - 4, PAGE_W - MARGIN, y - 4, width=0.8)
-    return y - 20
+def later_page(canvas, doc) -> None:  # noqa: ANN001
+    canvas.saveState()
+    canvas.setFont("Helvetica", 7)
+    canvas.setFillColor(colors.HexColor("#555555"))
+    canvas.drawString(MARGIN_X, PAGE_H - 24, "Inspectable Symbolic Compression: A Mixed-Results Study")
+    canvas.drawRightString(PAGE_W - MARGIN_X, PAGE_H - 24, str(doc.page))
+    canvas.line(MARGIN_X, PAGE_H - 30, PAGE_W - MARGIN_X, PAGE_H - 30)
+    canvas.restoreState()
 
 
-def table(page: Page, x: float, y: float, rows: list[list[str]], widths: list[float], row_h: float = 18) -> float:
-    total = sum(widths)
-    page.rect(x, y - row_h, total, row_h, gray=0.9)
-    cur_y = y
-    for r, row in enumerate(rows):
-        cur_x = x
-        if r == 1:
-            page.line(x, cur_y, x + total, cur_y, width=0.8)
-        for c, cell in enumerate(row):
-            font = "F2" if r == 0 else "F1"
-            page.text(cur_x + 4, cur_y - 12, cell[:42], size=8, font=font)
-            cur_x += widths[c]
-        cur_y -= row_h
-    page.line(x, y, x + total, y, width=0.8)
-    page.line(x, cur_y, x + total, cur_y, width=0.8)
-    return cur_y - 14
-
-
-def bar_chart(page: Page, x: float, y: float, title: str, labels: list[str], values: list[float], max_v: float) -> None:
-    page.text(x, y, title, size=11, font="F2")
-    base_y = y - 145
-    chart_h = 110
-    page.line(x, base_y, x + 250, base_y)
-    page.line(x, base_y, x, base_y + chart_h)
-    for i, (label, value) in enumerate(zip(labels, values)):
-        bx = x + 25 + i * 70
-        h = chart_h * value / max_v
-        page.fill_rect_rgb(bx, base_y, 34, h, 0.18, 0.36, 0.64)
-        page.text(bx - 5, base_y - 14, label, size=8)
-        page.text(bx - 2, base_y + h + 4, f"{value:.3f}", size=8)
-
-
-def line_chart(page: Page, x: float, y: float, title: str, xs: list[int], ys: list[float], max_y: float) -> None:
-    page.text(x, y, title, size=11, font="F2")
-    base_y = y - 145
-    chart_w = 250
-    chart_h = 110
-    page.line(x, base_y, x + chart_w, base_y)
-    page.line(x, base_y, x, base_y + chart_h)
-    points: list[tuple[float, float]] = []
-    min_x, max_x = min(xs), max(xs)
-    for xi, yi in zip(xs, ys):
-        px = x + (xi - min_x) / (max_x - min_x) * chart_w
-        py = base_y + yi / max_y * chart_h
-        points.append((px, py))
-    for (x1, y1), (x2, y2) in zip(points, points[1:]):
-        page.line(x1, y1, x2, y2, width=1.2)
-    for (px, py), xi, yi in zip(points, xs, ys):
-        page.fill_rect_rgb(px - 2.5, py - 2.5, 5, 5, 0.80, 0.20, 0.16)
-        page.text(px - 8, base_y - 14, str(xi), size=8)
-        page.text(px - 8, py + 7, f"{yi:.3f}", size=8)
-
-
-def pipeline(page: Page, x: float, y: float) -> None:
-    boxes = [
-        ("Long\ndocument", x, y),
-        ("LLM\ncompressor", x + 115, y),
-        ("Symbols +\ndictionary", x + 230, y),
-        ("LLM\nreasoner", x + 365, y),
+def story() -> list[Flowable]:
+    flow: list[Flowable] = []
+    flow += [
+        Paragraph("Abstract", S["abstract_label"]),
+        Paragraph(
+            "We study Inspectable Symbolic Compression (ISM), a prompt-only method that rewrites long "
+            "documents as symbols, dictionary definitions, and relations. The result is mixed. ISM "
+            "structure is functionally used: semantic dictionary damage and symbolic-structure removal "
+            "both reduce accuracy. Yet a natural-language model summary is significantly more accurate "
+            "and more token-efficient under the same budgets, and it dominates reuse cost-accuracy. "
+            "We therefore do not claim prompt-only ISM is a better compressor. The study identifies a "
+            "boundary: symbolic text written by an LLM and read by an LLM remains in the same class as "
+            "summarization. Future work should treat ISM as executable semantic IR parsed and checked "
+            "outside the LLM loop.",
+            S["abstract"],
+        ),
+        Spacer(1, 3),
+        PipelineFigure(COL_W),
     ]
-    for text, bx, by in boxes:
-        page.rect(bx, by - 52, 86, 42, gray=0.92)
-        for j, line in enumerate(text.split("\n")):
-            page.text(bx + 8, by - 25 - 11 * j, line, size=9, font="F2" if j == 0 else "F1")
-    for bx in [x + 86, x + 201, x + 316]:
-        page.line(bx, y - 31, bx + 28, y - 31, width=1.2)
-        page.line(bx + 28, y - 31, bx + 22, y - 27, width=1.2)
-        page.line(bx + 28, y - 31, bx + 22, y - 35, width=1.2)
-    page.rect(x + 230, y - 105, 120, 34, gray=0.95)
-    page.text(x + 238, y - 91, "flip / blank / derange", size=8)
-    page.line(x + 273, y - 52, x + 273, y - 71, width=1.0)
 
-
-def build() -> Document:
-    doc = Document()
-
-    p = doc.page()
-    p.text(MARGIN, 735, "Inspectable Symbolic Compression for Long-Context Reasoning", 18, "F2")
-    p.text(MARGIN, 712, "A Mixed-Results Study", 15, "F2")
-    p.text(MARGIN, 690, "Anonymous Authors", 10)
-    y = heading(p, 655, "Abstract")
-    y = wrapped(
-        p,
-        MARGIN,
-        y,
-        "We study Inspectable Symbolic Compression (ISM), a prompt-only method that rewrites "
-        "long documents as discrete symbols, dictionary definitions, and symbolic relations. "
-        "The result is mixed. ISM structure is functionally used: flipping dictionary conclusions "
-        "and removing symbolic structure significantly reduce accuracy. However, natural-language "
-        "model summaries are significantly more accurate and more token-efficient under the same "
-        "fixed budgets, and they dominate the reuse cost-accuracy frontier. We therefore do not "
-        "claim that prompt-only ISM is a better compressor. The study instead identifies a boundary: "
-        "symbolic compression generated by an LLM and read by an LLM remains in the same class as "
-        "text summarization, pointing toward future executable semantic IRs.",
-        width=86,
-    )
-    y = heading(p, y - 8, "Summary of Findings")
-    rows = [
-        ["RQ", "Result", "Interpretation"],
-        ["RQ1", "ISM dictionary and symbolic structure are used.", "Positive"],
-        ["RQ3", "Model Summary beats ISM at all budgets.", "Negative"],
-        ["RQ4", "Reuse helps caches, but summary dominates ISM.", "Negative"],
-        ["RQ2", "Unseen-label swap remains unrun.", "Future work"],
+    flow += section("1. Introduction")
+    flow += [
+        p(
+            "Prompt-compression work usually optimizes token count and retained downstream accuracy. "
+            "We ask a narrower diagnostic question: can a compressed representation expose meaning units "
+            "that can be inspected and intervened on? ISM forces the compressor to emit symbols, a short "
+            "dictionary, and relations such as precedence or exception.",
+        ),
+        p(
+            "The original hypothesis was that this symbolic text would be both compact and manipulable. "
+            "The experiments preserve only the second part. ISM is read and used by the model, but it "
+            "does not beat ordinary summaries as a prompt-only compressor.",
+        ),
     ]
-    y = table(p, MARGIN, y, rows, [55, 300, 115], row_h=19)
-    p.text(MARGIN, y, "Figure 1: Prompt-only ISM pipeline.", 10, "F2")
-    pipeline(p, MARGIN, y - 20)
 
-    p = doc.page()
-    y = heading(p, 735, "Method and Setup")
-    y = wrapped(
-        p,
-        MARGIN,
-        y,
-        "ISM represents a compressed document as symbols S, a dictionary D mapping symbols to "
-        "short definitions, and relations G encoding precedence, exception, or application order. "
-        "The main model is Qwen2.5-7B-Instruct in 4-bit inference with greedy decoding. "
-        "Compression outputs are regenerated rather than truncated when they exceed budget. "
-        "Synthetic Rule-QA provides hidden rule graphs for audit and oracle summaries.",
-        width=88,
-    )
-    y = heading(p, y - 10, "RQ1: Dictionary Ablation")
-    rows = [
-        ["Condition", "Acc", "AR", "CR"],
-        ["Full Context", "0.750", "1.000", "1.000"],
-        ["Full Symbol + Dict", "0.446", "0.594", "0.745"],
-        ["Deranged Dict", "0.375", "0.500", "0.745"],
-        ["Flipped Dict", "0.367", "0.489", "0.745"],
-        ["Symbol Only", "0.413", "0.550", "0.079"],
-        ["Random Symbol", "0.304", "0.406", "0.738"],
+    flow += section("2. Related Work")
+    flow += [
+        p(
+            "<b>Token-level prompt compression.</b> LLMLingua, LongLLMLingua, LLMLingua-2, and Selective "
+            "Context reduce context by selecting, reweighting, or dropping tokens. These methods are strong "
+            "baselines for budgeted prompting, but the compressed object is still an optimized prompt span.",
+            "small",
+        ),
+        p(
+            "<b>Learned memory compression.</b> Gist Tokens, AutoCompressors, and ICAE replace long context "
+            "with trained latent or soft-token memory. They can be very compact, but their internal state is "
+            "not directly inspectable or locally editable by a human or a symbolic checker.",
+            "small",
+        ),
+        p(
+            "<b>Intervenable bottlenecks.</b> Concept Bottleneck and Concept Embedding Models show why an "
+            "intermediate representation can be valuable even when it is not the shortest one: the user can "
+            "inspect or intervene on named concepts. ISM imports that idea into prompt compression, but keeps "
+            "the representation textual and prompt-only.",
+            "small",
+        ),
     ]
-    y = table(p, MARGIN, y, rows, [190, 70, 70, 70], row_h=18)
-    wrapped(
-        p,
-        MARGIN,
-        y,
-        "At N=240 paired questions, semantic dictionary flip is positive and significant "
-        "(Delta_map_flip=+0.079, p=0.032), and Symbol Only beats Random Symbol "
-        "(Delta_symbol=+0.108, p=0.0005). Derangement is not significant, indicating "
-        "that surface label binding is not the main mechanism.",
-        width=88,
-    )
-    bar_chart(p, 300, 215, "RQ1 contrast estimates", ["derange", "flip", "symbol"], [0.071, 0.079, 0.108], 0.14)
 
-    p = doc.page()
-    y = heading(p, 735, "RQ3: Fixed-Budget Comparison")
-    rows = [
-        ["Method", "128", "256", "512"],
-        ["Oracle Gold Summary", "0.732 / 11.0", "0.732 / 11.0", "0.732 / 11.0"],
-        ["Model Summary", "1.036 / 51.3", "1.125 / 17.3", "1.196 / 13.3"],
-        ["Keyword Extract", "0.714 / 7.4", "0.732 / 4.2", "0.750 / 3.6"],
-        ["ISM", "0.679 / 9.4", "0.679 / 9.3", "0.661 / 8.9"],
+    flow += section("3. Method")
+    flow += [
+        p(
+            "Each example contains a document x_i, questions q_ij, and labels y_ij. A producer m writes a "
+            "compressed context z_i^m under budget B, and the same reasoner answers from that context.",
+            "small",
+        ),
+        eq("z_i^m(B) = P_m(x_i; B),    tokens(z_i^m) &lt;= B"),
+        eq("yhat_ij^m = R(z_i^m(B), q_ij)"),
+        p(
+            "ISM is the producer whose output is z=(S,D,G): symbol labels S={Z1,...,Zk}, dictionary entries "
+            "D mapping each label to a condition and conclusion, and relations G encoding precedence, "
+            "exception, or conjunction structure. Natural-language summary, keyword extraction, and oracle "
+            "gold summary are evaluated under the same answer protocol.",
+            "small",
+        ),
+        eq("Acc_m = mean[1(yhat_ij^m = y_ij)]"),
+        eq("AR_m = Acc_m / Acc_full;    CR_m = tokens(z_m) / tokens(x)"),
+        eq("ES_m = AR_m / CR_m;    Delta_flip = Acc_full_dict - Acc_flipped"),
+        p(
+            "Interventions separate three constructs. Derangement permutes labels while preserving the "
+            "definition multiset; conclusion flip changes the semantic content of dictionary rules; blanking "
+            "removes dictionary content; symbol-only and random-symbol controls test whether relations carry "
+            "information beyond arbitrary markers.",
+            "small",
+        ),
     ]
-    y = table(p, MARGIN, y, rows, [155, 110, 110, 110], row_h=20)
-    rows = [
-        ["Budget", "Summary-ISM", "95% CI", "McNemar p"],
-        ["128", "+0.2500", "[0.100, 0.400]", "0.0029"],
-        ["256", "+0.3125", "[0.175, 0.450]", "1.1e-4"],
-        ["512", "+0.3750", "[0.250, 0.500]", "2.3e-7"],
-    ]
-    y = table(p, MARGIN, y - 5, rows, [80, 120, 150, 110], row_h=20)
-    wrapped(
-        p,
-        MARGIN,
-        y,
-        "The primary paired comparison is on the same 80 questions. Model Summary significantly "
-        "outperforms ISM at every budget. Since both methods remove filler, this result is not "
-        "explained by full-context degradation.",
-        width=88,
-    )
-    line_chart(p, 300, 215, "Summary accuracy advantage", [128, 256, 512], [0.25, 0.3125, 0.375], 0.42)
 
-    p = doc.page()
-    y = heading(p, 735, "RQ4: Reuse Cost-Accuracy")
-    rows = [
-        ["Method", "n=1", "n=8", "n=32", "n=64", "Acc"],
-        ["Full Context", "1354", "10828", "43312", "86624", "0.700"],
-        ["Model Summary", "1526", "2168", "4369", "7305", "0.787"],
-        ["ISM", "1548", "2265", "4725", "8005", "0.475"],
-        ["Oracle Gold", "1530", "2184", "4428", "7420", "0.512"],
-        ["Keyword Extract", "1820", "3492", "9225", "16868", "0.512"],
+    flow += section("4. Results")
+    flow += [
+        p("<b>RQ1: ISM structure is used.</b> After correcting a low-purity compressor and replacing weak "
+          "label derangement with semantic conclusion flips, dictionary content and symbolic structure "
+          "both show functional effects.", "small"),
+        compact_table(
+            [
+                ["Condition", "Acc", "AR", "CR"],
+                ["Full Context", "0.750", "1.000", "1.000"],
+                ["Full Symbol+Dict", "0.446", "0.594", "0.745"],
+                ["Flipped Dict", "0.367", "0.489", "0.745"],
+                ["Symbol Only", "0.413", "0.550", "0.079"],
+                ["Random Symbol", "0.304", "0.406", "0.738"],
+            ],
+            [78, 39, 39, 39],
+        ),
+        p(
+            "Dev scale-up: Delta_map_flip=+0.079 (95% CI [0.013,0.146], p=0.032); "
+            "Delta_symbol=+0.108 (95% CI [0.050,0.167], p=5e-4). Derangement is non-significant.",
+            "caption",
+        ),
+        p("<b>RQ3: summaries beat ISM under fixed budgets.</b> The primary analysis is paired on the same "
+          "80 questions, so it is not explained by full-context filler degradation.", "small"),
+        compact_table(
+            [
+                ["Budget", "Summary-ISM", "95% CI", "p"],
+                ["128", "+0.2500", "[0.100,0.400]", "0.0029"],
+                ["256", "+0.3125", "[0.175,0.450]", "1.1e-4"],
+                ["512", "+0.3750", "[0.250,0.500]", "2.3e-7"],
+            ],
+            [42, 64, 75, 42],
+        ),
+        MiniLineChart(COL_W),
     ]
-    y = table(p, MARGIN, y, rows, [130, 65, 75, 85, 85, 55], row_h=19)
-    wrapped(
-        p,
-        MARGIN,
-        y,
-        "All cached methods become cheaper than full context from two questions onward. "
-        "However, Model Summary is both cheaper and more accurate than ISM, so reuse is "
-        "not an ISM-specific advantage. It is a property of any reusable text cache.",
-        width=88,
-    )
-    y = heading(p, 335, "Discussion")
-    wrapped(
-        p,
-        MARGIN,
-        y,
-        "What worked: ISM structure is used by the LLM. What failed: the original efficiency "
-        "hypothesis. Prompt-only ISM is generated by an LLM and read by an LLM, just like "
-        "a summary; within that class, ordinary summaries are stronger. The follow-up path is "
-        "not another prompt format but a program-readable semantic IR with parser, checker, "
-        "local transformations, and symbolic execution.",
-        width=88,
-    )
 
-    p = doc.page()
-    y = heading(p, 735, "Limitations and Conclusion")
-    y = wrapped(
-        p,
-        MARGIN,
-        y,
-        "The experiments are dev-scale and synthetic. QASPER and LLMLingua-2 are specified "
-        "but not fully run in the reported results. Several GPU raw files are retained by "
-        "hash and reproducibility commands rather than fully stored in the repository. "
-        "Most importantly, this paper evaluates prompt-only ISM, not an executable semantic IR.",
-        width=88,
-    )
-    y = wrapped(
-        p,
-        MARGIN,
-        y - 8,
-        "Conclusion: ISM is functionally used but is not a better prompt-only compressor than "
-        "natural-language summaries. The honest contribution is a mixed result that maps the "
-        "failure mode and points toward executable semantic IRs outside the LLM-only loop.",
-        width=88,
-    )
-    y = heading(p, y - 10, "Selected References")
+    flow += [
+        Spacer(1, 2),
+        p(
+            "Fixed-budget AR/ES cells show the same pattern. At budgets 128/256/512, Model Summary reaches "
+            "1.036/51.3, 1.125/17.3, and 1.196/13.3, while ISM reaches 0.679/9.4, 0.679/9.3, and 0.661/8.9.",
+            "small",
+        ),
+        p("<b>RQ4: reuse is not ISM-specific.</b> Cached representations become cheaper than full context "
+          "from n=2 questions onward, but Model Summary is cheaper and more accurate than ISM.", "small"),
+        compact_table(
+            [
+                ["Method", "n=1", "n=8", "n=64", "Acc"],
+                ["Full Context", "1354", "10828", "86624", "0.700"],
+                ["Model Summary", "1526", "2168", "7305", "0.787"],
+                ["ISM", "1548", "2265", "8005", "0.475"],
+                ["Keyword", "1820", "3492", "16868", "0.512"],
+            ],
+            [72, 39, 44, 48, 39],
+        ),
+        p(
+            "<b>Takeaway.</b> The prompt-only format gives a real diagnostic signal but loses the "
+            "efficiency contest. A stronger future paper should move from LLM-readable text to "
+            "program-readable semantic IR.",
+            "small",
+        ),
+        PageBreak(),
+    ]
+
+    flow += section("5. Discussion")
+    flow += [
+        p(
+            "The positive result is that ISM is not inert: the model uses semantic dictionary content and "
+            "symbolic relations. The negative result is stronger for the original compression claim: in the "
+            "prompt-only setting, ISM and Model Summary are both LLM-written texts read by an LLM, and the "
+            "ordinary summary is the better text cache.",
+        ),
+        p(
+            "Thus the study should not be read as a successful new compressor. It is a boundary result. "
+            "To become categorically different from summaries, ISM must be parsed, checked, transformed, "
+            "and executed by programs outside the LLM. The future claim is not 'summaries cannot be edited' "
+            "but 'semantic IRs permit automatic, local, schema-validated edits and symbolic execution.'",
+        ),
+    ]
+
+    flow += section("6. Limitations")
+    flow += [
+        p(
+            "The reported experiments are dev-scale and synthetic. QASPER and LLMLingua-2 are specified but "
+            "not fully evaluated here. Several large GPU artifacts are stored by sha256 and reproducibility "
+            "commands. RQ2 dictionary swap remains future work. Most importantly, this paper evaluates "
+            "prompt-only ISM, not a parser/checker/executor system.",
+            "small",
+        )
+    ]
+
+    flow += section("7. Conclusion")
+    flow += [
+        p(
+            "ISM representations are functionally used, but prompt-only ISM is not a better compressor than "
+            "natural-language summaries. This mixed result closes one path and clarifies the next: executable "
+            "semantic IR for long-context reasoning.",
+        ),
+        p(
+            "The boundary claim is therefore precise: structured prompt text can expose units that an LLM "
+            "uses, but it does not by itself create a new computational object. The next version must make "
+            "the representation parseable, checkable, and executable by ordinary software.",
+            "small",
+        ),
+    ]
+    flow += section("8. Pre-registered Status")
+    flow += [
+        compact_table(
+            [
+                ["Criterion", "Status", "Evidence"],
+                ["#1 ISM > Summary", "Failed", "RQ3/RQ4 summary dominates"],
+                ["#2 structure used", "Met", "flip p=0.032; symbol p=5e-4"],
+                ["#3 unseen swap", "Open", "LoRA swap not run"],
+            ],
+            [74, 42, 106],
+        ),
+        p(
+            "By the original decision rule, failure of criterion #1 means the paper cannot claim "
+            "an efficiency advantage for ISM. Criterion #2 supports functional use of the internal "
+            "structure, but that is distinct from being a better compressor.",
+            "small",
+        ),
+    ]
+
+    flow.append(FrameBreak())
+
+    flow += section("9. Semantic-IR Path")
+    flow += [
+        compact_table(
+            [
+                ["Property", "Summary", "Semantic IR"],
+                ["Format", "free text", "schema / AST"],
+                ["Validation", "manual", "checker"],
+                ["Edit", "rewrite", "rule-id local edit"],
+                ["Execution", "LLM", "symbolic executor"],
+            ],
+            [58, 72, 92],
+        ),
+        p(
+            "The next research question is compile-and-execute: can an LLM compile a long document "
+            "into an IR that a non-LLM program can parse and run? That would make the representation "
+            "categorically different from a short natural-language summary.",
+            "small",
+        ),
+    ]
+
+    flow += section("10. Evidence Ledger")
+    flow += [
+        compact_table(
+            [
+                ["Finding", "Evidence", "Status"],
+                ["ISM is used", "ablation-qwen7b-N120", "positive"],
+                ["Summary wins", "fixed-budget-N40", "negative"],
+                ["Reuse not unique", "reuse-N40", "negative"],
+                ["Root cause", "llm-ism-diagnostic", "resolved"],
+            ],
+            [58, 98, 66],
+        ),
+        p(
+            "The evidence pattern is internally consistent: the representation carries signal, but the "
+            "prompt-only implementation loses the efficiency contest to a plain summary.",
+            "small",
+        ),
+    ]
+
+    flow += section("11. Next Tests")
+    flow += [
+        p(
+            "<b>Compile-and-execute.</b> Convert ISM text into a schema-checked AST and answer with a "
+            "deterministic executor. <b>Targeted edits.</b> Repair or delete a rule by id and verify the "
+            "prediction changes locally. <b>Swap.</b> Finish the LoRA dictionary-swap experiment for unseen "
+            "labels.",
+            "small",
+        )
+    ]
+
+    flow += section("12. Reproducibility")
+    flow += [
+        p(
+            "Evidence is stored under docs/evidence/: ablation-qwen7b-N120 for RQ1, fixed-budget-N40 "
+            "for RQ3, reuse-N40 for RQ4, and llm-ism-diagnostic.md for the corruption/purity diagnosis. "
+            "Large GPU outputs are retained by sha256 and reproducibility commands.",
+            "small",
+        )
+    ]
+
+    flow += section("References")
     refs = [
-        "Koh et al. Concept Bottleneck Models. ICML 2020.",
-        "Dasigi et al. QASPER: QA anchored in research papers. NAACL 2021.",
-        "Jiang et al. LLMLingua. arXiv:2310.05736, 2023.",
-        "Jiang et al. LongLLMLingua. arXiv:2310.06839, 2023.",
-        "Pan et al. LLMLingua-2. arXiv:2403.12968, 2024.",
-        "Mu et al. Learning to Compress Prompts with Gist Tokens. NeurIPS 2023.",
-        "Chevalier et al. Adapting Language Models to Compress Contexts. arXiv:2305.14788.",
+        "[1] Koh et al. Concept Bottleneck Models. ICML 2020.",
+        "[2] Espinosa Zarlenga et al. Concept Embedding Models. NeurIPS 2022.",
+        "[3] Dasigi et al. QASPER: QA anchored in research papers. NAACL 2021.",
+        "[4] Jiang et al. LLMLingua. EMNLP 2023.",
+        "[5] Jiang et al. LongLLMLingua. ACL 2024.",
+        "[6] Pan et al. LLMLingua-2. Findings ACL 2024.",
+        "[7] Mu et al. Learning to Compress Prompts with Gist Tokens. NeurIPS 2023.",
+        "[8] Chevalier et al. Adapting Language Models to Compress Contexts. EMNLP 2023.",
+        "[9] Ge et al. In-context Autoencoder. ICLR 2024.",
+        "[10] McNemar. Sampling error of correlated proportions. Psychometrika 1947.",
     ]
-    for ref in refs:
-        y = wrapped(p, MARGIN + 12, y, "- " + ref, width=86, size=9, leading=12)
-    return doc
+    flow.extend(Paragraph(r, S["ref"]) for r in refs)
+    return flow
 
 
-def main() -> None:
-    out = Path(__file__).with_name("ism-mixed-results.pdf")
-    build().write(out)
-    print(out)
+def build() -> None:
+    first_top = PAGE_H - 1.72 * inch
+    normal_top = PAGE_H - MARGIN_Y
+    first_frames = [
+        Frame(MARGIN_X, MARGIN_Y, COL_W, first_top - MARGIN_Y, id="f1a", leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0),
+        Frame(MARGIN_X + COL_W + GAP, MARGIN_Y, COL_W, first_top - MARGIN_Y, id="f1b", leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0),
+    ]
+    normal_frames = [
+        Frame(MARGIN_X, MARGIN_Y, COL_W, normal_top - MARGIN_Y - 0.08 * inch, id="n1", leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0),
+        Frame(MARGIN_X + COL_W + GAP, MARGIN_Y, COL_W, normal_top - MARGIN_Y - 0.08 * inch, id="n2", leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0),
+    ]
+    doc = BaseDocTemplate(
+        str(OUT),
+        pagesize=letter,
+        leftMargin=MARGIN_X,
+        rightMargin=MARGIN_X,
+        topMargin=MARGIN_Y,
+        bottomMargin=MARGIN_Y,
+    )
+    doc.addPageTemplates(
+        [
+            PageTemplate(id="first", frames=first_frames, onPage=first_page, autoNextPageTemplate="later"),
+            PageTemplate(id="later", frames=normal_frames, onPage=later_page),
+        ]
+    )
+    doc.build(story())
 
 
 if __name__ == "__main__":
-    main()
-
+    build()
+    print(OUT)

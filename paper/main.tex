@@ -1,457 +1,380 @@
-\documentclass[11pt]{article}
+\documentclass[10pt,twocolumn]{article}
 
-\usepackage[margin=1in]{geometry}
+\usepackage[margin=0.62in,columnsep=0.22in]{geometry}
 \usepackage{times}
 \usepackage{microtype}
 \usepackage{booktabs}
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{xcolor}
-\usepackage{enumitem}
 \usepackage{graphicx}
+\usepackage{xcolor}
 \usepackage{tikz}
 \usepackage{pgfplots}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
 
 \pgfplotsset{compat=1.17}
-\setlist[itemize]{leftmargin=*}
-\setlist[enumerate]{leftmargin=*}
-
-\title{Inspectable Symbolic Compression for Long-Context Reasoning:\\A Mixed-Results Study}
-\author{Anonymous Authors}
-\date{\today}
+\setlength{\parskip}{2pt}
+\setlength{\parindent}{0.8em}
+\setlength{\textfloatsep}{6pt}
+\setlength{\floatsep}{6pt}
+\setlength{\intextsep}{6pt}
 
 \newcommand{\ism}{\textsc{ISM}}
 \newcommand{\ar}{\textsc{AR}}
 \newcommand{\cratio}{\textsc{CR}}
 \newcommand{\es}{\textsc{ES}}
-\newcommand{\full}{\textsc{Full}}
-\newcommand{\summary}{\textsc{Summary}}
-\newcommand{\keyword}{\textsc{Keyword}}
+
+\title{\vspace{-1.2em}Inspectable Symbolic Compression for Long-Context Reasoning:\\A Mixed-Results Study}
+\author{Anonymous Authors}
+\date{}
 
 \begin{document}
 \maketitle
+\vspace{-1.7em}
 
 \begin{abstract}
-Large language models can answer questions over long documents, but long inputs
-increase latency and token cost.  We study \emph{Inspectable Symbolic
-Compression} (\ism), a prompt-only method that asks an instruction-tuned model
-to rewrite a document as discrete symbols, dictionary definitions, and symbolic
-relations.  The motivating hypothesis was that this format could preserve
-task-relevant information while exposing units that can be removed, corrupted,
-or swapped.  We report a mixed result.  In a controlled Synthetic Rule-QA
-setting, the internal structure of \ism{} is used: flipping dictionary
-conclusions and removing symbolic structure both significantly reduce accuracy.
-However, when \ism{} is compared with a strong natural-language model-summary
-baseline under the same token budgets, the summary is significantly more
-accurate and more token-efficient.  In a reuse analysis, both \ism{} and
-summaries become cheaper than full context from two questions onward, but the
-summary dominates \ism{} in both cost and accuracy.  We therefore do not claim
-that prompt-only \ism{} is a better compressor than natural-language summaries.
-Instead, the study identifies a boundary: if symbolic compression is generated
-by an LLM and then read again by an LLM, it remains in the same class as text
-summarization.  The results point toward future work on executable semantic IRs
-that are parsed, checked, transformed, and executed by programs rather than
-only read by another LLM.
+We study Inspectable Symbolic Compression (\ism), a prompt-only method that
+rewrites long documents as symbols, dictionary definitions, and relations.  The
+result is mixed.  \ism{} structure is functionally used: semantic dictionary
+damage and symbolic-structure removal both reduce accuracy.  Yet a
+natural-language model summary is significantly more accurate and more
+token-efficient under the same budgets, and it dominates reuse cost-accuracy.
+We therefore do not claim prompt-only \ism{} is a better compressor.  The study
+identifies a boundary: symbolic text written by an LLM and read by an LLM
+remains in the same class as summarization.  Future work should treat \ism{} as
+executable semantic IR parsed and checked outside the LLM loop.
 \end{abstract}
-
-\section{Summary of Findings}
-
-This paper is intentionally written as a mixed-results study.  The central
-question is not whether \ism{} can be made to look good after the fact, but
-which parts of the original hypothesis survive comparison against a strong
-summary baseline.
-
-\begin{table}[t]
-\centering
-\small
-\begin{tabular}{p{0.16\linewidth}p{0.48\linewidth}p{0.24\linewidth}}
-\toprule
-Question & Result & Interpretation \\
-\midrule
-RQ1 & \ism{} structure is used.  At dev scale, $\Delta_{\mathrm{map}}^{\mathrm{flip}}=+0.079$ ($p=0.032$) and $\Delta_{\mathrm{symbol}}=+0.108$ ($p=5\times10^{-4}$). & Positive, but dev-scale. \\
-RQ3 & Model Summary beats \ism{} at all fixed budgets: paired summary--\ism{} gaps of $+0.250$, $+0.3125$, and $+0.375$ for 128, 256, and 512 tokens. & Negative for efficiency. \\
-RQ4 & Reuse helps all cached representations, but Model Summary dominates \ism{} in both cost and accuracy. & Negative for \ism{}-specific reuse. \\
-RQ2 & Dictionary swap with unseen labels remains unrun. & Future work. \\
-\bottomrule
-\end{tabular}
-\caption{High-level status of the study.  The prompt-only \ism{} format is
-functionally used, but it does not beat natural-language summaries as an
-efficient compressor.}
-\label{tab:summary}
-\end{table}
 
 \section{Introduction}
 
-Long-context language models make it possible to answer questions over papers,
-reports, and conversation histories, but the cost of repeatedly processing long
-inputs remains high.  Prompt-compression methods reduce this cost by selecting
-tokens, rewriting text, or learning compact continuous memories
-\citep{jiang2023llmlingua,jiang2023longllmlingua,pan2024llmlingua2,li2023selective,mu2023gist,chevalier2023autocompressors,ge2024icae}.
-These approaches are usually evaluated by two axes: how many tokens they save
-and how much downstream accuracy they retain.
+Prompt-compression work usually optimizes token count and retained downstream
+accuracy.  We ask a narrower diagnostic question: can a compressed
+representation expose meaning units that can be inspected and intervened on?
+\ism{} forces the compressor to emit symbols, a short dictionary, and relations
+such as precedence or exception.
 
-This leaves a different question underexplored.  If a compressed prompt
-preserves enough information to answer correctly, can we identify which units
-of meaning were preserved?  Can we damage or repair one unit and observe a
-predictable change in the output?  Concept-bottleneck models show the value of
-intervenable intermediate representations in supervised settings
-\citep{koh2020concept,espinosa2022concept}; prompt compression has not usually
-been evaluated through the same lens.
-
-We therefore study \ism{}, which rewrites a document into three explicit parts:
-symbols, dictionary entries, and relations.  A typical representation is:
-
-\begin{quote}\small
-\texttt{Z1 := if marker\_a=high and marker\_b=low then risk=HIGH}\\
-\texttt{Z2 := if marker\_c=present then risk=LOW}\\
-\texttt{RELATIONS: Z1 overrides Z2}
-\end{quote}
-
-The initial hope was that this representation might be both compact and
-intervenable.  The experiments support only half of that hope.  The structure
-is used by the model, but natural-language summaries are a stronger
-prompt-only compressor.  This negative result is scientifically useful: it
-clarifies that merely forcing an LLM to emit a symbolic-looking text format
-does not create a qualitatively new computational object.  To become different
-from a summary, symbolic compression likely has to become a program-readable
-semantic IR.
-
-\section{Related Work}
-
-\paragraph{Prompt compression.}
-LLMLingua and LongLLMLingua compress prompts by selecting or removing less
-important tokens while attempting to preserve task-relevant information
-\citep{jiang2023llmlingua,jiang2023longllmlingua}.  LLMLingua-2 distills
-compression knowledge into a token-classification model and targets faithful,
-task-agnostic compression \citep{pan2024llmlingua2}.  Selective Context
-similarly removes low-information units to reduce inference cost
-\citep{li2023selective}.  These methods motivate our fixed-budget comparison
-against extractive and model-summary baselines.
-
-\paragraph{Continuous context compression.}
-Gist tokens, AutoCompressors, and ICAE compress prompts or contexts into
-learned memory tokens or vectors \citep{mu2023gist,chevalier2023autocompressors,ge2024icae}.
-Such representations can be highly compact but do not expose a natural unit
-such as ``rule 3'' that can be deleted or counterfactually edited.  \ism{}
-takes the opposite tradeoff: it uses ordinary text tokens and gives up some
-density in exchange for explicit symbolic entries.
-
-\paragraph{Intervenable representations.}
-Concept Bottleneck Models and Concept Embedding Models insert human-meaningful
-intermediate variables between inputs and predictions
-\citep{koh2020concept,espinosa2022concept}.  \ism{} is related in spirit, but
-the setting differs: the intermediate representation is generated from long
-text at inference time and is evaluated as a prompt-compression artifact, not
-as a supervised concept layer.
-
-\section{Inspectable Symbolic Compression}
-
-Given a document $x$, question $q$, and answer $y$, a compressor $C$ produces a
-bounded representation $z=C(x;B)$ under token budget $B$, and a reasoner $R$
-answers $\hat{y}=R(z,q)$.  For \ism{}, the representation is
-\[
-z_{\mathrm{ISM}} = (S,D,G),
-\]
-where $S=\{Z_1,\dots,Z_k\}$ is a set of symbol labels, $D$ maps labels to short
-definitions, and $G$ stores relations such as precedence, exception, or
-application order.
+The original hypothesis was that this symbolic text would be both compact and
+manipulable.  The experiments preserve only the second part.  \ism{} is read
+and used by the model, but it does not beat ordinary summaries as a prompt-only
+compressor.
 
 \begin{figure}[t]
 \centering
+\scriptsize
 \begin{tikzpicture}[
-  node/.style={draw, rounded corners, align=center, minimum height=1.0cm, font=\small},
-  arrow/.style={->, thick}
+  box/.style={draw, rounded corners, align=center, minimum width=0.62in, minimum height=0.31in, fill=blue!6},
+  arr/.style={->, thick}
 ]
-\node[node, fill=blue!8] (doc) at (0,0) {Long\\document};
-\node[node, fill=blue!8] (comp) at (3,0) {LLM\\compressor};
-\node[node, fill=green!8] (ism) at (6.3,0) {Symbols\\Dictionary\\Relations};
-\node[node, fill=orange!10] (reason) at (9.8,0) {LLM\\reasoner};
-\node[node, fill=red!8] (interv) at (6.3,-1.8) {flip / blank\\derange / symbol-only};
-\draw[arrow] (doc) -- (comp);
-\draw[arrow] (comp) -- (ism);
-\draw[arrow] (ism) -- (reason);
-\draw[arrow] (ism) -- (interv);
-\draw[arrow] (interv) -- (reason);
+\node[box] (doc) at (0,0) {Long\\document};
+\node[box] (comp) at (1.18,0) {LLM\\compressor};
+\node[box] (ismn) at (2.36,0) {ISM\\$S,D,G$};
+\node[box] (reason) at (3.54,0) {LLM\\reasoner};
+\draw[arr] (doc) -- (comp);
+\draw[arr] (comp) -- (ismn);
+\draw[arr] (ismn) -- (reason);
+\node[box, fill=orange!8, minimum width=0.90in] (int) at (2.36,-0.62) {flip / blank\\symbol-only};
+\draw[arr] (ismn) -- (int);
+\draw[arr] (int.east) -- ++(0.45,0) |- (reason.south);
 \end{tikzpicture}
-\caption{\ism{} in the prompt-only setting.  The same LLM family generates the
-compressed text and later reads it for question answering.  This design makes
-the format inspectable, but it also places \ism{} in direct competition with
-ordinary natural-language summaries.}
+\caption{Prompt-only \ism{}: an LLM writes structured text and an LLM reads it
+again.  This makes \ism{} directly comparable with natural-language summaries.}
 \label{fig:pipeline}
 \end{figure}
 
-We use several interventions.  \emph{Derangement} permutes dictionary entries
-across labels and tests surface label binding.  \emph{Conclusion flip} changes
-the conclusion of dictionary rules while preserving their trigger conditions,
-and is the primary test of semantic dictionary dependence.  \emph{Blanking}
-removes conclusion-bearing content.  \emph{Symbol-only} removes the dictionary
-while preserving the symbolic relation string.
+\section{Related Work}
 
-\section{Experimental Setup}
+\textbf{Token-level prompt compression.}
+LLMLingua, LongLLMLingua, LLMLingua-2, and Selective Context compress prompts by
+selecting, reweighting, or removing tokens
+\citep{jiang2023llmlingua,jiang2023longllmlingua,pan2024llmlingua2,li2023selective}.
+These methods are strong baselines for budgeted prompting, but the compressed
+object is still an optimized prompt span rather than an explicit intermediate
+representation.
 
-\paragraph{Data.}
-Synthetic Rule-QA is a controlled long-document QA task in which each document
-is generated from an underlying rule graph.  This graph lets us audit whether a
-compressed representation preserves rule conditions, conclusions, and
-relations.  The long-context profile uses documents of roughly 700--2000
-tokens, making budgets of 64--512 tokens meaningful.  QASPER
-\citep{dasigi2021qasper} is discussed as an external-validity target, but the
-current paper reports only Synthetic Rule-QA experiments.
+\textbf{Learned memory compression.}
+Gist Tokens, AutoCompressors, and ICAE replace long context with trained latent
+or soft-token memory \citep{mu2023gist,chevalier2023autocompressors,ge2024icae}.
+They can be compact and reusable, but their internal state is not directly
+inspectable or locally editable by a human or a symbolic checker.
 
-\paragraph{Model and decoding.}
-The main compressor and reasoner are Qwen2.5-7B-Instruct in 4-bit inference,
-with greedy decoding.  Compression outputs are regenerated rather than
-truncated when they exceed the budget.  We report accuracy, accuracy retention
-(\ar), compression ratio (\cratio), and efficiency score $\es=\ar/\cratio$.
-Paired comparisons use bootstrap confidence intervals and McNemar tests
-\citep{mcnemar1947note,efron1994introduction}.
+\textbf{Intervenable bottlenecks.}
+Concept Bottleneck Models and Concept Embedding Models show why an intermediate
+representation can be useful even when it is not the shortest representation:
+named concepts can be inspected or intervened on
+\citep{koh2020concept,espinosa2022concept}.  \ism{} imports that motivation into
+prompt compression, but keeps the representation textual and prompt-only.  This
+paper tests whether that textual bottleneck is enough.
 
-\paragraph{Baselines.}
-The central baseline is Model Summary: the same LLM produces a natural-language
-summary under the same budget.  We also include keyword extraction and an
-oracle gold summary derived from the hidden rule graph.  LLMLingua-2 is part of
-the intended comparison suite but is not run in the reported dev-scale results.
+\section{Method}
+
+Each example contains a document $x_i$, questions $q_{ij}$, and labels
+$y_{ij}$.  A producer $m$ writes a compressed context $z_i^m$ under budget $B$,
+and the same frozen reasoner answers from that context:
+\[
+z_i^m(B)=P_m(x_i;B), \qquad |z_i^m(B)|_T \le B,
+\]
+\[
+\hat y_{ij}^m = R\!\left(z_i^m(B), q_{ij}\right).
+\]
+
+\ism{} is the producer whose output is
+\[
+z_i^{\ism}=(S_i,D_i,G_i),
+\]
+where $S_i=\{Z_1,\ldots,Z_k\}$ are labels, $D_i$ maps each label to a condition
+and conclusion, and $G_i$ records relations such as precedence, exception, or
+conjunction.  Natural-language summary, keyword extraction, and oracle gold
+summary are evaluated under the same answer protocol.
+
+Accuracy is measured over paired questions:
+\[
+\mathrm{Acc}_m=\frac{1}{N}\sum_{i,j}\mathbf{1}\!\left[\hat y_{ij}^m=y_{ij}\right].
+\]
+We also report accuracy retention, compression ratio, and efficiency score:
+\[
+\ar_m=\frac{\mathrm{Acc}_m}{\mathrm{Acc}_{\mathrm{full}}}, \qquad
+\cratio_m=\frac{|z_i^m|_T}{|x_i|_T}, \qquad
+\es_m=\frac{\ar_m}{\cratio_m}.
+\]
+
+The ablations separate three constructs.  Derangement permutes labels while
+preserving the definition multiset, conclusion flip changes the semantic
+content of dictionary rules, blanking removes dictionary content, and
+symbol-only/random-symbol controls test whether relations carry information
+beyond arbitrary markers.
 
 \section{Results}
 
-\subsection{RQ1: The Symbolic Structure Is Functionally Used}
-
-The first ablation study asks whether the model actually uses the dictionary
-and symbolic structure.  Early null results were misleading: the compressor
-often dropped conclusions, and a label-derangement corruption preserved the
-set of rule definitions.  After fixing the compressor and replacing
-derangement with semantic conclusion flips, the signal became clear.
+\paragraph{RQ1: \ism{} structure is used.}
+After correcting a low-purity compressor and replacing weak label derangement
+with semantic conclusion flips, dictionary content and symbolic structure both
+show functional effects.
 
 \begin{table}[t]
 \centering
-\small
+\scriptsize
 \begin{tabular}{lccc}
 \toprule
-Condition & Accuracy & \ar & \cratio \\
+Condition & Acc & \ar & \cratio \\
 \midrule
 Full Context & 0.750 & 1.000 & 1.000 \\
-Full Symbol + Dict & 0.446 & 0.594 & 0.745 \\
-Deranged Dict & 0.375 & 0.500 & 0.745 \\
+Full Symbol+Dict & 0.446 & 0.594 & 0.745 \\
 Flipped Dict & 0.367 & 0.489 & 0.745 \\
-Blank Dict & 0.250 & 0.333 & 0.215 \\
 Symbol Only & 0.413 & 0.550 & 0.079 \\
 Random Symbol & 0.304 & 0.406 & 0.738 \\
 \bottomrule
 \end{tabular}
-\caption{Dictionary ablation, dev scale-up: 120 documents, 240 questions, and
-1680 predictions.  Evidence is stored under
-\texttt{docs/evidence/ablation-qwen7b-N120/}.}
-\label{tab:ablation}
+\caption{Dictionary ablation, dev scale-up.  $N=120$ documents, 240 questions.
+Full results are in \texttt{docs/evidence/ablation-qwen7b-N120/}.}
+\label{tab:rq1}
 \end{table}
 
-At $N=240$ paired questions, flipping dictionary conclusions lowers accuracy
-relative to the normal dictionary
-($\Delta_{\mathrm{map}}^{\mathrm{flip}}=+0.079$, 95\% CI $[0.013,0.146]$,
-$p=0.032$).  Symbol-only representations also beat length-matched random
-symbols ($\Delta_{\mathrm{symbol}}=+0.108$, 95\% CI $[0.050,0.167]$,
-$p=5\times10^{-4}$).  In contrast, derangement remains non-significant
-($p=0.159$), consistent with the diagnosis that it tests surface label binding
-rather than semantic content.
+At $N=240$ paired questions, semantic dictionary flip is positive and
+significant ($\Delta_{\mathrm{map}}^{\mathrm{flip}}=+0.079$, 95\% CI
+$[0.013,0.146]$, $p=0.032$), and Symbol Only beats Random Symbol
+($\Delta_{\mathrm{symbol}}=+0.108$, 95\% CI $[0.050,0.167]$, $p=5e$-$4$).
+Derangement is not significant, indicating that surface label binding is not
+the main mechanism.
 
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=0.92\linewidth,
-  height=5cm,
-  ymin=-0.05,
-  ymax=0.18,
-  ybar,
-  bar width=16pt,
-  symbolic x coords={derange,flip,symbol},
-  xtick=data,
-  ylabel={Accuracy difference},
-  nodes near coords,
-  nodes near coords align={vertical},
-]
-\addplot coordinates {(derange,0.071) (flip,0.079) (symbol,0.108)};
-\end{axis}
-\end{tikzpicture}
-\caption{Key RQ1 contrasts.  The semantic flip and symbol-vs-random contrasts
-are positive; derangement is treated as a secondary label-binding diagnostic.}
-\label{fig:rq1}
-\end{figure}
-
-\subsection{RQ3: Natural-Language Summaries Beat \ism{} Under Fixed Budgets}
-
-The fixed-budget experiment compares \ism{}, Model Summary, keyword extraction,
-and oracle summaries at budgets of 128, 256, and 512 tokens.  Budget 64 is
-excluded from the primary comparison because \ism{} has a floor of roughly 100
-tokens and fails to fit.
+\paragraph{RQ3: summaries beat \ism{} under fixed budgets.}
+The primary analysis is paired on the same 80 questions, so it is not explained
+by full-context filler degradation.
 
 \begin{table}[t]
 \centering
-\small
-\begin{tabular}{lccc}
+\scriptsize
+\begin{tabular}{rccc}
 \toprule
-Method & 128 & 256 & 512 \\
+Budget & Summary-\ism{} & 95\% CI & McNemar $p$ \\
 \midrule
-Oracle Gold Summary & 0.732 / 11.0 & 0.732 / 11.0 & 0.732 / 11.0 \\
-Model Summary & 1.036 / 51.3 & 1.125 / 17.3 & 1.196 / 13.3 \\
-Keyword Extract & 0.714 / 7.4 & 0.732 / 4.2 & 0.750 / 3.6 \\
-\ism{} & 0.679 / 9.4 & 0.679 / 9.3 & 0.661 / 8.9 \\
+128 & +0.2500 & [0.100,0.400] & 0.0029 \\
+256 & +0.3125 & [0.175,0.450] & $1.1e$-$4$ \\
+512 & +0.3750 & [0.250,0.500] & $2.3e$-$7$ \\
 \bottomrule
 \end{tabular}
-\caption{Fixed-budget dev pilot.  Each cell is \ar{} / \es{} relative to full
-context.  The primary analysis is the paired summary-vs-\ism{} contrast in
-Table~\ref{tab:paired}.}
-\label{tab:fixed}
-\end{table}
-
-\begin{table}[t]
-\centering
-\small
-\begin{tabular}{ccccc}
-\toprule
-Budget & $\Delta=\mathrm{Acc}_{summary}-\mathrm{Acc}_{ISM}$ & 95\% CI & McNemar $p$ & Discordant \\
-\midrule
-128 & +0.2500 & [0.100, 0.400] & 0.0029 & 31 / 11 \\
-256 & +0.3125 & [0.175, 0.450] & $1.1\times10^{-4}$ & 33 / 8 \\
-512 & +0.3750 & [0.250, 0.500] & $2.3\times10^{-7}$ & 33 / 3 \\
-\bottomrule
-\end{tabular}
-\caption{Primary RQ3 paired contrast on the same 80 questions.  Model Summary
-significantly outperforms \ism{} at every budget.  Evidence is stored under
-\texttt{docs/evidence/fixed-budget-N40/}.}
+\caption{Primary paired contrast: Model Summary minus \ism{} accuracy.  Summary
+wins at every budget.}
 \label{tab:paired}
 \end{table}
 
-This result is not merely an artifact of using full-context accuracy as the
-denominator for \ar.  A filler sanity check showed that full-context accuracy
-can degrade as neutral filler grows, but the primary fixed-budget result
-compares summary and \ism{} on the same questions after both have removed
-filler.  Model Summary still wins.
-
 \begin{figure}[t]
 \centering
+\scriptsize
 \begin{tikzpicture}
 \begin{axis}[
-  width=0.92\linewidth,
-  height=5cm,
+  width=\columnwidth,
+  height=1.35in,
   ymin=0,
-  ymax=0.45,
-  xlabel={Budget},
-  ylabel={Summary accuracy advantage},
+  ymax=0.43,
+  xlabel={budget},
+  ylabel={summary--ISM},
   xtick={128,256,512},
   grid=major,
 ]
 \addplot+[mark=*] coordinates {(128,0.25) (256,0.3125) (512,0.375)};
 \end{axis}
 \end{tikzpicture}
-\caption{Paired Model Summary minus \ism{} accuracy difference.  The advantage
-increases with budget in the dev pilot.}
+\caption{The paired summary advantage grows with budget in the dev pilot.}
 \label{fig:summarywins}
 \end{figure}
 
-\subsection{RQ4: Reuse Helps Cached Text, but Not \ism{} Specifically}
+Fixed-budget \ar{}/\es{} cells show the same pattern. At budgets 128/256/512,
+Model Summary reaches 1.036/51.3, 1.125/17.3, and 1.196/13.3, while \ism{}
+reaches 0.679/9.4, 0.679/9.3, and 0.661/8.9.
 
-Reuse is analytically evaluated by charging one compression pass per document
-and then serving multiple questions from the cached representation.  This helps
-all cached representations.  However, Model Summary again dominates \ism{}.
+\paragraph{RQ4: reuse is not \ism{}-specific.}
+Cached representations become cheaper than full context from $n=2$ questions
+onward, but Model Summary is cheaper and more accurate than \ism{}.
 
 \begin{table}[t]
 \centering
-\small
-\begin{tabular}{lrrrrr}
+\scriptsize
+\begin{tabular}{lrrrr}
 \toprule
-Method & $n=1$ & $n=8$ & $n=32$ & $n=64$ & Acc. \\
+Method & $n=1$ & $n=8$ & $n=64$ & Acc \\
 \midrule
-Full Context & 1354 & 10828 & 43312 & 86624 & 0.700 \\
-Model Summary & 1526 & 2168 & 4369 & 7305 & 0.787 \\
-\ism{} & 1548 & 2265 & 4725 & 8005 & 0.475 \\
-Oracle Gold & 1530 & 2184 & 4428 & 7420 & 0.512 \\
-Keyword Extract & 1820 & 3492 & 9225 & 16868 & 0.512 \\
+Full Context & 1354 & 10828 & 86624 & 0.700 \\
+Model Summary & 1526 & 2168 & 7305 & 0.787 \\
+\ism{} & 1548 & 2265 & 8005 & 0.475 \\
+Keyword & 1820 & 3492 & 16868 & 0.512 \\
 \bottomrule
 \end{tabular}
-\caption{Reuse cost-accuracy tradeoff at budget 256.  All cached methods beat
-full context from two questions onward, but Model Summary is cheaper and more
-accurate than \ism{}.}
+\caption{Reuse cost at budget 256.  Reuse helps all cached text, but summary
+dominates \ism{} in both cost and accuracy.}
 \label{tab:reuse}
 \end{table}
 
 \section{Discussion}
 
-\paragraph{What worked.}
-The \ism{} format is not inert.  Once the compressor is forced to preserve
-conclusions and the corruption tests semantic content, both the dictionary and
-symbolic structure show functional effects.  The early null result was a
-measurement failure, not a clean refutation of the idea that the representation
-can be read by the model.
+The positive result is that \ism{} is not inert: the model uses semantic
+dictionary content and symbolic relations.  The negative result is stronger for
+the original compression claim: in the prompt-only setting, \ism{} and Model
+Summary are both LLM-written texts read by an LLM, and the ordinary summary is
+the better text cache.
 
-\paragraph{What did not work.}
-The stronger claim, that prompt-only \ism{} is a better compressor than natural
-language summaries, is not supported.  In this setting, both \ism{} and Model
-Summary are texts generated by an LLM and read by an LLM.  Within that class,
-ordinary summaries are shorter, more accurate, and cheaper to reuse.
-
-\paragraph{What this implies.}
-If symbolic compression is to become more than a verbose summary format, it
-must leave the ``LLM writes text, LLM reads text'' loop.  A future semantic IR
-should be parsed into an AST, checked for invariants, transformed through
-local programmatic edits, and executed by a symbolic engine when possible.  The
-relevant contrast would then no longer be ``Can the LLM read this prompt?'' but
-``Can the LLM compile the document into an executable representation?''
+Thus the study should not be read as a successful new compressor.  It is a
+boundary result.  To become categorically different from summaries, \ism{} must
+be parsed, checked, transformed, and executed by programs outside the LLM.  The
+future claim is not ``summaries cannot be edited'' but ``semantic IRs permit
+automatic, local, schema-validated edits and symbolic execution.''
 
 \section{Limitations}
 
-The main experiments are dev-scale and use a synthetic rule domain rather than
-a full registered-scale run.  QASPER is specified but not evaluated in the
-reported results.  LLMLingua-2 is planned but absent from the dev pilot.
-Several raw GPU artifacts are retained by hash and reproducibility commands
-rather than fully stored in the repository.  Finally, the study evaluates a
-prompt-only \ism{} format; it does not test a parser/checker/executor system,
-which is precisely the future direction suggested by the negative result.
+The reported experiments are dev-scale and synthetic.  QASPER
+\citep{dasigi2021qasper} and LLMLingua-2 are specified but not fully evaluated
+here.  Several large GPU artifacts are stored by sha256 and reproducibility
+commands.  RQ2 dictionary swap remains future work.  Most importantly, this
+paper evaluates prompt-only \ism{}, not a parser/checker/executor system.
 
 \section{Conclusion}
 
-We studied Inspectable Symbolic Compression as a candidate long-context
-compression format.  The result is mixed.  \ism{} representations are
-functionally used: damaging semantic dictionary content and removing symbolic
-structure both hurt performance.  But \ism{} is not a better prompt-only
-compressor than a natural-language model summary.  Summaries win in fixed
-budget accuracy, efficiency score, and reuse cost-accuracy frontier.  The
-honest conclusion is that prompt-only symbolic compression fails as an
-efficiency story, while pointing to a sharper future direction: executable
-semantic IRs that are checked, edited, and run by programs outside the LLM.
+\ism{} representations are functionally used, but prompt-only \ism{} is not a
+better compressor than natural-language summaries.  This mixed result closes
+one path and clarifies the next: executable semantic IR for long-context
+reasoning.
 
-\section*{Reproducibility}
+The boundary claim is precise: structured prompt text can expose units that an
+LLM uses, but it does not by itself create a new computational object.  The next
+version must make the representation parseable, checkable, and executable by
+ordinary software.
 
-The repository stores evidence under \texttt{docs/evidence/}.  The most
-important runs are \texttt{ablation-qwen7b-N120/}, \texttt{fixed-budget-N40/},
-\texttt{reuse-N40/}, and the diagnostic report
-\texttt{docs/reviews/llm-ism-diagnostic.md}.  The LaTeX and PDF artifacts for
-this paper are stored under \texttt{paper/}.
+\section{Pre-registered Status}
 
-\bibliographystyle{plainnat}
-\bibliography{references}
+\begin{table}[t]
+\centering
+\scriptsize
+\begin{tabular}{lll}
+\toprule
+Criterion & Status & Evidence \\
+\midrule
+\#1 \ism{} $>$ Summary & Failed & RQ3/RQ4 summary dominates \\
+\#2 structure used & Met & flip $p=0.032$; symbol $p=5e$-$4$ \\
+\#3 unseen swap & Open & LoRA swap not run \\
+\bottomrule
+\end{tabular}
+\caption{Dev-scale status of the original criteria.  Since criterion \#1 fails,
+we do not claim an efficiency advantage for \ism{}.}
+\label{tab:status}
+\end{table}
 
-\appendix
-\section{Pre-registered Criteria and Dev-Scale Status}
+Criterion \#2 supports functional use of the internal structure, but that is
+distinct from being a better compressor.  The original efficiency hypothesis is
+not supported.
 
-The original criteria were: (1) \ism{} should outperform Model Summary in
-\ar{} or \es; (2) Symbol Only should beat Random Symbol and Full Symbol + Dict
-should beat corrupted dictionary conditions; and (3) unseen swapped labels with
-a dictionary should retain most original-label performance.  Criterion (1)
-fails in the fixed-budget and reuse experiments.  Criterion (2) is met under
-the amended semantic-flip corruption.  Criterion (3) remains untested.
+\section{Semantic-IR Path}
 
-\section{Future Semantic-IR Experiments}
+\begin{table}[t]
+\centering
+\scriptsize
+\begin{tabular}{lll}
+\toprule
+Property & Summary & Semantic IR \\
+\midrule
+Format & free text & schema / AST \\
+Validation & manual & checker \\
+Edit & rewrite & rule-id local edit \\
+Execution & LLM & symbolic executor \\
+\bottomrule
+\end{tabular}
+\caption{The path that would make symbolic compression categorically different
+from summaries.}
+\label{tab:ir}
+\end{table}
 
-Two follow-up experiments would move beyond the prompt-only setting.
-First, a compile-and-execute experiment would parse LLM-generated \ism{} into an
-AST and answer Synthetic Rule-QA questions with a symbolic executor.  Second, a
-programmatic-editability experiment would corrupt one rule, repair it through a
-deterministic rule-id edit, validate the schema, and measure targeted recovery
-and collateral damage.  These tests would compare machine-checkable symbolic
-IRs against free-form summaries without falsely claiming that summaries cannot
-be manually edited.
+The next research question is compile-and-execute: can an LLM compile a long
+document into an IR that a non-LLM program can parse and run?  That would make
+the representation categorically different from a short natural-language
+summary.
+
+\section{Evidence Ledger}
+
+\begin{table}[t]
+\centering
+\scriptsize
+\begin{tabular}{lll}
+\toprule
+Finding & Evidence & Status \\
+\midrule
+\ism{} is used & ablation-qwen7b-N120 & positive \\
+Summary wins & fixed-budget-N40 & negative \\
+Reuse not unique & reuse-N40 & negative \\
+Root cause & llm-ism-diagnostic & resolved \\
+\bottomrule
+\end{tabular}
+\caption{The mixed result is internally consistent: the representation carries
+signal, but the prompt-only implementation loses the efficiency contest to a
+plain summary.}
+\label{tab:ledger}
+\end{table}
+
+\section{Next Tests}
+
+\textbf{Compile-and-execute.} Convert \ism{} text into a schema-checked AST and
+answer with a deterministic executor.  \textbf{Targeted edits.} Repair or delete
+a rule by id and verify the prediction changes locally.  \textbf{Swap.} Finish
+the LoRA dictionary-swap experiment for unseen labels.
+
+\section{Reproducibility}
+
+Evidence is stored under \texttt{docs/evidence/}: \texttt{ablation-qwen7b-N120}
+for RQ1, \texttt{fixed-budget-N40} for RQ3, \texttt{reuse-N40} for RQ4, and
+\texttt{llm-ism-diagnostic.md} for the corruption/purity diagnosis.  Large GPU
+outputs are retained by sha256 and reproducibility commands.
+
+\section*{References}
+\scriptsize
+\begin{thebibliography}{10}
+\bibitem{koh2020concept} Koh et al. Concept Bottleneck Models. ICML 2020.
+\bibitem{espinosa2022concept} Espinosa Zarlenga et al. Concept Embedding Models. NeurIPS 2022.
+\bibitem{dasigi2021qasper} Dasigi et al. A Dataset of Information-Seeking Questions and Answers Anchored in Research Papers. NAACL 2021.
+\bibitem{jiang2023llmlingua} Jiang et al. LLMLingua. EMNLP 2023.
+\bibitem{jiang2023longllmlingua} Jiang et al. LongLLMLingua. ACL 2024.
+\bibitem{pan2024llmlingua2} Pan et al. LLMLingua-2. Findings ACL 2024.
+\bibitem{li2023selective} Li et al. Compressing Context to Enhance Inference Efficiency of LLMs. EMNLP 2023.
+\bibitem{mu2023gist} Mu et al. Learning to Compress Prompts with Gist Tokens. NeurIPS 2023.
+\bibitem{chevalier2023autocompressors} Chevalier et al. Adapting Language Models to Compress Contexts. EMNLP 2023.
+\bibitem{ge2024icae} Ge et al. In-context Autoencoder for Context Compression in a Large Language Model. ICLR 2024.
+\end{thebibliography}
 
 \end{document}
-
