@@ -21,6 +21,8 @@ from ism.experiments.budgets import (
 )
 from ism.experiments.compression_audit import run_compression_audit
 from ism.experiments.conditions import build_condition_matrix
+from ism.experiments.fixed_budget import run_fixed_budget_experiment
+from ism.experiments.methods import FIXED_BUDGET_METHODS
 from ism.inference.factory import build_text_generator
 from ism.inference.mock import MockTextGenerator
 from ism.inference.pipeline import run_pipeline
@@ -94,6 +96,21 @@ def build_parser() -> argparse.ArgumentParser:
     )
     compress_audit.add_argument("--config", required=True, type=Path)
     compress_audit.add_argument("--output", required=True, type=Path)
+
+    fixed_budget = subparsers.add_parser(
+        "run-fixed-budget",
+        help="run experiment 6.3 (Fixed-Budget Comparison) across methods and budgets",
+    )
+    fixed_budget.add_argument("--config", required=True, type=Path)
+    fixed_budget.add_argument("--output", required=True, type=Path)
+    fixed_budget.add_argument("--budgets", type=int, nargs="+", default=[64, 128, 256, 512])
+    fixed_budget.add_argument(
+        "--methods", nargs="+", default=list(FIXED_BUDGET_METHODS)
+    )
+    fixed_budget.add_argument("--batch-size", type=int, default=1)
+    fixed_budget.add_argument("--resume", action="store_true")
+    fixed_budget.add_argument("--doc-offset", type=int, default=0)
+    fixed_budget.add_argument("--doc-count", type=int, default=None)
 
     audit = subparsers.add_parser(
         "audit-conditions",
@@ -230,6 +247,22 @@ def main(argv: Sequence[str] | None = None) -> None:
             )
             sys.stdout.write(
                 json.dumps(asdict(audit), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+            )
+            return
+        if args.command == "run-fixed-budget":
+            fb = run_fixed_budget_experiment(
+                config,
+                output_dir=args.output,
+                generator=build_text_generator(config),
+                budgets=tuple(args.budgets),
+                methods=tuple(args.methods),
+                batch_size=args.batch_size,
+                resume=args.resume,
+                doc_offset=args.doc_offset,
+                doc_count=args.doc_count,
+            )
+            sys.stdout.write(
+                json.dumps(asdict(fb), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
             )
             return
         if args.command == "audit-conditions":
