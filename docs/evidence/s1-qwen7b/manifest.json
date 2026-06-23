@@ -1,0 +1,15 @@
+{
+  "backend": "transformers",
+  "conditions": [
+    "full_context",
+    "full_symbol_dict",
+    "symbol_only"
+  ],
+  "config_hash": "fe0c0667cfd3df2198f65add086cdbe13e20edd475f8a205f799277ea56c1bb7",
+  "model_revision": "main",
+  "run_id": "s1-qwen7b",
+  "seed": 42,
+  "split": "dev",
+  "status": "completed",
+  "tokenizer_revision": "main"
+}

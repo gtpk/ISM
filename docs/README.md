@@ -18,6 +18,16 @@
 | 9 | 통계·보고·서버 진입 | 로컬 완료, Colab S0 차단 | [Phase 9](phases/phase-9-local-validation.md) |
 | 3b | Transformers GPU backend (`ism run`, S1 준비) | 로컬 완료, Colab S1 대기(GPU 런타임 필요) | [Phase 3b](phases/phase-3b-transformers-backend.md) |
 
+## 결정·리뷰·증거
+
+- `docs/decisions/`: 설계 결정 기록 (ADR)
+  - [ADR 0001 — config_hash 배포 독립성](decisions/0001-config-hash-is-deployment-independent.md)
+  - [ADR 0002 — QASPER 채점 규약](decisions/0002-qasper-scoring.md)
+- `docs/reviews/`: 검토 메모
+  - [논문 실험 갭 분석](reviews/paper-experiment-gaps.md)
+- `docs/evidence/`: 재현 가능한 실행 증거 (산출물·체크섬·환경)
+  - [증거 인덱스 (S0/S1)](evidence/README.md)
+
 ## 문서 구분
 
 - `deep-research-report.md`: 논문 주장과 실험 설계

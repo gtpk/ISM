@@ -1,0 +1,10 @@
+{
+  "accuracy": 0.7,
+  "artifact_dir": "/content/SESC/artifacts/runs/s1",
+  "correct": 21,
+  "documents": 5,
+  "predictions": 30,
+  "questions": 10,
+  "run_id": "s1-qwen7b",
+  "successful": 30
+}
