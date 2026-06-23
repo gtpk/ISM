@@ -1,0 +1,1814 @@
+{
+  "compression_count": 20,
+  "conditions": [
+    "corrupted_dict",
+    "full_context",
+    "full_symbol_dict",
+    "random_symbol",
+    "symbol_only"
+  ],
+  "input_count": 200,
+  "question_count": 40,
+  "records": [
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000000",
+      "input_hash": "6d16ce83e537438cee156841bc1e8939b697d2bcc941f35708724d7bf35a0754",
+      "method": "full_context",
+      "question_id": "syn_dev_000000_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000000",
+      "input_hash": "f6d1f5e6a580135eb113da13caf6198cc2a807a71edbf621bc85b653ae13e0df",
+      "method": "ism",
+      "question_id": "syn_dev_000000_q00",
+      "source_compression_id": "6b55b04cb4379c9c90ba213915342f1548aa348d1823c90f4ff8bf9b5158470b",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000000",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000000_q00",
+      "source_compression_id": "6b55b04cb4379c9c90ba213915342f1548aa348d1823c90f4ff8bf9b5158470b",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000000",
+      "input_hash": "0210927d6c000de5fee5b4adc909fb7f3561c0d37867a6c2dcc1e3adf75c52f7",
+      "method": "ism",
+      "question_id": "syn_dev_000000_q00",
+      "source_compression_id": "6b55b04cb4379c9c90ba213915342f1548aa348d1823c90f4ff8bf9b5158470b",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000000",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000000_q00",
+      "source_compression_id": "6b55b04cb4379c9c90ba213915342f1548aa348d1823c90f4ff8bf9b5158470b",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000000",
+      "input_hash": "6d16ce83e537438cee156841bc1e8939b697d2bcc941f35708724d7bf35a0754",
+      "method": "full_context",
+      "question_id": "syn_dev_000000_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000000",
+      "input_hash": "f6d1f5e6a580135eb113da13caf6198cc2a807a71edbf621bc85b653ae13e0df",
+      "method": "ism",
+      "question_id": "syn_dev_000000_q01",
+      "source_compression_id": "6b55b04cb4379c9c90ba213915342f1548aa348d1823c90f4ff8bf9b5158470b",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000000",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000000_q01",
+      "source_compression_id": "6b55b04cb4379c9c90ba213915342f1548aa348d1823c90f4ff8bf9b5158470b",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000000",
+      "input_hash": "0210927d6c000de5fee5b4adc909fb7f3561c0d37867a6c2dcc1e3adf75c52f7",
+      "method": "ism",
+      "question_id": "syn_dev_000000_q01",
+      "source_compression_id": "6b55b04cb4379c9c90ba213915342f1548aa348d1823c90f4ff8bf9b5158470b",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000000",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000000_q01",
+      "source_compression_id": "6b55b04cb4379c9c90ba213915342f1548aa348d1823c90f4ff8bf9b5158470b",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000001",
+      "input_hash": "d0cab88c4474db4104b88f31fe62a74b9d07841a1964a322549b02aaf2fd0b70",
+      "method": "full_context",
+      "question_id": "syn_dev_000001_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000001",
+      "input_hash": "c7f48dd54bbce17fea4e1a88870a5177ae18ba5098c7a31d3262a18238faf4ae",
+      "method": "ism",
+      "question_id": "syn_dev_000001_q00",
+      "source_compression_id": "b73cf5b4e0376c86f66b65a47fa2ac8f3c3f74f6ebf7c677e9eb2cc2b1a97e69",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000001",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000001_q00",
+      "source_compression_id": "b73cf5b4e0376c86f66b65a47fa2ac8f3c3f74f6ebf7c677e9eb2cc2b1a97e69",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000001",
+      "input_hash": "d5016a30d204520bd1aaeeefa6c88e82b95d1be293bdea18e58e19b74880edda",
+      "method": "ism",
+      "question_id": "syn_dev_000001_q00",
+      "source_compression_id": "b73cf5b4e0376c86f66b65a47fa2ac8f3c3f74f6ebf7c677e9eb2cc2b1a97e69",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000001",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000001_q00",
+      "source_compression_id": "b73cf5b4e0376c86f66b65a47fa2ac8f3c3f74f6ebf7c677e9eb2cc2b1a97e69",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000001",
+      "input_hash": "d0cab88c4474db4104b88f31fe62a74b9d07841a1964a322549b02aaf2fd0b70",
+      "method": "full_context",
+      "question_id": "syn_dev_000001_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000001",
+      "input_hash": "c7f48dd54bbce17fea4e1a88870a5177ae18ba5098c7a31d3262a18238faf4ae",
+      "method": "ism",
+      "question_id": "syn_dev_000001_q01",
+      "source_compression_id": "b73cf5b4e0376c86f66b65a47fa2ac8f3c3f74f6ebf7c677e9eb2cc2b1a97e69",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000001",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000001_q01",
+      "source_compression_id": "b73cf5b4e0376c86f66b65a47fa2ac8f3c3f74f6ebf7c677e9eb2cc2b1a97e69",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000001",
+      "input_hash": "d5016a30d204520bd1aaeeefa6c88e82b95d1be293bdea18e58e19b74880edda",
+      "method": "ism",
+      "question_id": "syn_dev_000001_q01",
+      "source_compression_id": "b73cf5b4e0376c86f66b65a47fa2ac8f3c3f74f6ebf7c677e9eb2cc2b1a97e69",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000001",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000001_q01",
+      "source_compression_id": "b73cf5b4e0376c86f66b65a47fa2ac8f3c3f74f6ebf7c677e9eb2cc2b1a97e69",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000002",
+      "input_hash": "241c6c361a2760869a393d7302ae4244d3242242a07b4b65b60c302deb342b75",
+      "method": "full_context",
+      "question_id": "syn_dev_000002_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000002",
+      "input_hash": "ab55fa79ffdc77c59d1161fca6fd4f2c3ba237ec33d0ac20f5e2c4b47ee2b954",
+      "method": "ism",
+      "question_id": "syn_dev_000002_q00",
+      "source_compression_id": "4fc9bc10dc8106a7d122bdcd9a774fedaf6a916f443d13e034d530987929231f",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000002",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000002_q00",
+      "source_compression_id": "4fc9bc10dc8106a7d122bdcd9a774fedaf6a916f443d13e034d530987929231f",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000002",
+      "input_hash": "ee4ec4343b3187f94b941989351d1b6d0a87e7eec59189628a1daece6e8cc2b2",
+      "method": "ism",
+      "question_id": "syn_dev_000002_q00",
+      "source_compression_id": "4fc9bc10dc8106a7d122bdcd9a774fedaf6a916f443d13e034d530987929231f",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000002",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000002_q00",
+      "source_compression_id": "4fc9bc10dc8106a7d122bdcd9a774fedaf6a916f443d13e034d530987929231f",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000002",
+      "input_hash": "241c6c361a2760869a393d7302ae4244d3242242a07b4b65b60c302deb342b75",
+      "method": "full_context",
+      "question_id": "syn_dev_000002_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000002",
+      "input_hash": "ab55fa79ffdc77c59d1161fca6fd4f2c3ba237ec33d0ac20f5e2c4b47ee2b954",
+      "method": "ism",
+      "question_id": "syn_dev_000002_q01",
+      "source_compression_id": "4fc9bc10dc8106a7d122bdcd9a774fedaf6a916f443d13e034d530987929231f",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000002",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000002_q01",
+      "source_compression_id": "4fc9bc10dc8106a7d122bdcd9a774fedaf6a916f443d13e034d530987929231f",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000002",
+      "input_hash": "ee4ec4343b3187f94b941989351d1b6d0a87e7eec59189628a1daece6e8cc2b2",
+      "method": "ism",
+      "question_id": "syn_dev_000002_q01",
+      "source_compression_id": "4fc9bc10dc8106a7d122bdcd9a774fedaf6a916f443d13e034d530987929231f",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000002",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000002_q01",
+      "source_compression_id": "4fc9bc10dc8106a7d122bdcd9a774fedaf6a916f443d13e034d530987929231f",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000003",
+      "input_hash": "2057c75678631e4c66522c13a0a67cf09fa298b14863585ac36f59063e047d0d",
+      "method": "full_context",
+      "question_id": "syn_dev_000003_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000003",
+      "input_hash": "d9e650af0d3d039bdb84ed7dabf0c29a21f2bd0adb11898a5135c166fe2306b9",
+      "method": "ism",
+      "question_id": "syn_dev_000003_q00",
+      "source_compression_id": "684563e85189afe11055900a825e4c6d39a2fe15cdf1991aeb7e99d70b6a091a",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000003",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000003_q00",
+      "source_compression_id": "684563e85189afe11055900a825e4c6d39a2fe15cdf1991aeb7e99d70b6a091a",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000003",
+      "input_hash": "b593398a2bde5e6f24019d3061291247ff20c9e4266ffb8f70508cd8a6644d2d",
+      "method": "ism",
+      "question_id": "syn_dev_000003_q00",
+      "source_compression_id": "684563e85189afe11055900a825e4c6d39a2fe15cdf1991aeb7e99d70b6a091a",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000003",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000003_q00",
+      "source_compression_id": "684563e85189afe11055900a825e4c6d39a2fe15cdf1991aeb7e99d70b6a091a",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000003",
+      "input_hash": "2057c75678631e4c66522c13a0a67cf09fa298b14863585ac36f59063e047d0d",
+      "method": "full_context",
+      "question_id": "syn_dev_000003_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000003",
+      "input_hash": "d9e650af0d3d039bdb84ed7dabf0c29a21f2bd0adb11898a5135c166fe2306b9",
+      "method": "ism",
+      "question_id": "syn_dev_000003_q01",
+      "source_compression_id": "684563e85189afe11055900a825e4c6d39a2fe15cdf1991aeb7e99d70b6a091a",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000003",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000003_q01",
+      "source_compression_id": "684563e85189afe11055900a825e4c6d39a2fe15cdf1991aeb7e99d70b6a091a",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000003",
+      "input_hash": "b593398a2bde5e6f24019d3061291247ff20c9e4266ffb8f70508cd8a6644d2d",
+      "method": "ism",
+      "question_id": "syn_dev_000003_q01",
+      "source_compression_id": "684563e85189afe11055900a825e4c6d39a2fe15cdf1991aeb7e99d70b6a091a",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000003",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000003_q01",
+      "source_compression_id": "684563e85189afe11055900a825e4c6d39a2fe15cdf1991aeb7e99d70b6a091a",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000004",
+      "input_hash": "6b026ff312d30cdb6bba57382bb8aa30cfbb8168e3960934f89c52d017866b2d",
+      "method": "full_context",
+      "question_id": "syn_dev_000004_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000004",
+      "input_hash": "48682f61c129c3274687c80ab6c67cc19f7c569b9fca94204da240c05fe9af0e",
+      "method": "ism",
+      "question_id": "syn_dev_000004_q00",
+      "source_compression_id": "220ee0a0c12f9fc868e913751689060963f76b05e931adaed8f7d395adcf7f59",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000004",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000004_q00",
+      "source_compression_id": "220ee0a0c12f9fc868e913751689060963f76b05e931adaed8f7d395adcf7f59",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000004",
+      "input_hash": "2e110360b0643ced1311ff000e1a7b3a499fafcf16e39af3deb8a79a04b32864",
+      "method": "ism",
+      "question_id": "syn_dev_000004_q00",
+      "source_compression_id": "220ee0a0c12f9fc868e913751689060963f76b05e931adaed8f7d395adcf7f59",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000004",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000004_q00",
+      "source_compression_id": "220ee0a0c12f9fc868e913751689060963f76b05e931adaed8f7d395adcf7f59",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000004",
+      "input_hash": "6b026ff312d30cdb6bba57382bb8aa30cfbb8168e3960934f89c52d017866b2d",
+      "method": "full_context",
+      "question_id": "syn_dev_000004_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000004",
+      "input_hash": "48682f61c129c3274687c80ab6c67cc19f7c569b9fca94204da240c05fe9af0e",
+      "method": "ism",
+      "question_id": "syn_dev_000004_q01",
+      "source_compression_id": "220ee0a0c12f9fc868e913751689060963f76b05e931adaed8f7d395adcf7f59",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000004",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000004_q01",
+      "source_compression_id": "220ee0a0c12f9fc868e913751689060963f76b05e931adaed8f7d395adcf7f59",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000004",
+      "input_hash": "2e110360b0643ced1311ff000e1a7b3a499fafcf16e39af3deb8a79a04b32864",
+      "method": "ism",
+      "question_id": "syn_dev_000004_q01",
+      "source_compression_id": "220ee0a0c12f9fc868e913751689060963f76b05e931adaed8f7d395adcf7f59",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000004",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000004_q01",
+      "source_compression_id": "220ee0a0c12f9fc868e913751689060963f76b05e931adaed8f7d395adcf7f59",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000005",
+      "input_hash": "767cda6f6380df4e7776ea1ae3ec58d7564102b302589c469de7daf4f22aad9b",
+      "method": "full_context",
+      "question_id": "syn_dev_000005_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000005",
+      "input_hash": "9e4623aca7ffa08863600233d401c04ff53cb7e6a384a56f902f100837b71af7",
+      "method": "ism",
+      "question_id": "syn_dev_000005_q00",
+      "source_compression_id": "b5b7f522f5f0a259ba5fa6ca63a5f836ec65cb158705105dbeef7a887346e805",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000005",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000005_q00",
+      "source_compression_id": "b5b7f522f5f0a259ba5fa6ca63a5f836ec65cb158705105dbeef7a887346e805",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000005",
+      "input_hash": "738a7f2a055ebbe8fdc1e5b22361b132638fa40b56be373f6282f7b196d06a42",
+      "method": "ism",
+      "question_id": "syn_dev_000005_q00",
+      "source_compression_id": "b5b7f522f5f0a259ba5fa6ca63a5f836ec65cb158705105dbeef7a887346e805",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000005",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000005_q00",
+      "source_compression_id": "b5b7f522f5f0a259ba5fa6ca63a5f836ec65cb158705105dbeef7a887346e805",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000005",
+      "input_hash": "767cda6f6380df4e7776ea1ae3ec58d7564102b302589c469de7daf4f22aad9b",
+      "method": "full_context",
+      "question_id": "syn_dev_000005_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000005",
+      "input_hash": "9e4623aca7ffa08863600233d401c04ff53cb7e6a384a56f902f100837b71af7",
+      "method": "ism",
+      "question_id": "syn_dev_000005_q01",
+      "source_compression_id": "b5b7f522f5f0a259ba5fa6ca63a5f836ec65cb158705105dbeef7a887346e805",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000005",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000005_q01",
+      "source_compression_id": "b5b7f522f5f0a259ba5fa6ca63a5f836ec65cb158705105dbeef7a887346e805",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000005",
+      "input_hash": "738a7f2a055ebbe8fdc1e5b22361b132638fa40b56be373f6282f7b196d06a42",
+      "method": "ism",
+      "question_id": "syn_dev_000005_q01",
+      "source_compression_id": "b5b7f522f5f0a259ba5fa6ca63a5f836ec65cb158705105dbeef7a887346e805",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000005",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000005_q01",
+      "source_compression_id": "b5b7f522f5f0a259ba5fa6ca63a5f836ec65cb158705105dbeef7a887346e805",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000006",
+      "input_hash": "8f0b34fe7829b98a20c7b4cf63c9596e2c363958234565be9d16a2bda2748907",
+      "method": "full_context",
+      "question_id": "syn_dev_000006_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000006",
+      "input_hash": "b2b8c43bb27fd63a58c526216c692914d8aa07c3239f622e15e946e866ae56a1",
+      "method": "ism",
+      "question_id": "syn_dev_000006_q00",
+      "source_compression_id": "df82fb0aa143754e3f3db97ce9db8b3bbf088d3427929929b67123a524ed01cf",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000006",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000006_q00",
+      "source_compression_id": "df82fb0aa143754e3f3db97ce9db8b3bbf088d3427929929b67123a524ed01cf",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000006",
+      "input_hash": "3fe76202c21cdcfd495a830552b67e97d0025e4dc0a5199bedc1c5150090f4b4",
+      "method": "ism",
+      "question_id": "syn_dev_000006_q00",
+      "source_compression_id": "df82fb0aa143754e3f3db97ce9db8b3bbf088d3427929929b67123a524ed01cf",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000006",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000006_q00",
+      "source_compression_id": "df82fb0aa143754e3f3db97ce9db8b3bbf088d3427929929b67123a524ed01cf",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000006",
+      "input_hash": "8f0b34fe7829b98a20c7b4cf63c9596e2c363958234565be9d16a2bda2748907",
+      "method": "full_context",
+      "question_id": "syn_dev_000006_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000006",
+      "input_hash": "b2b8c43bb27fd63a58c526216c692914d8aa07c3239f622e15e946e866ae56a1",
+      "method": "ism",
+      "question_id": "syn_dev_000006_q01",
+      "source_compression_id": "df82fb0aa143754e3f3db97ce9db8b3bbf088d3427929929b67123a524ed01cf",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000006",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000006_q01",
+      "source_compression_id": "df82fb0aa143754e3f3db97ce9db8b3bbf088d3427929929b67123a524ed01cf",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000006",
+      "input_hash": "3fe76202c21cdcfd495a830552b67e97d0025e4dc0a5199bedc1c5150090f4b4",
+      "method": "ism",
+      "question_id": "syn_dev_000006_q01",
+      "source_compression_id": "df82fb0aa143754e3f3db97ce9db8b3bbf088d3427929929b67123a524ed01cf",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000006",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000006_q01",
+      "source_compression_id": "df82fb0aa143754e3f3db97ce9db8b3bbf088d3427929929b67123a524ed01cf",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000007",
+      "input_hash": "d0724414a14931fa700a96b913aec07e0366a30c8dc9fa778e9656ca9cd89133",
+      "method": "full_context",
+      "question_id": "syn_dev_000007_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000007",
+      "input_hash": "a24733faf3407b6d544d2ad40f2ffb2b916ca011d75b814fb35094b95131869f",
+      "method": "ism",
+      "question_id": "syn_dev_000007_q00",
+      "source_compression_id": "6eed71ff82f4fa487a54d1cd005c04dab1c1a125d5f25358f5aeeffc888ba501",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000007",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000007_q00",
+      "source_compression_id": "6eed71ff82f4fa487a54d1cd005c04dab1c1a125d5f25358f5aeeffc888ba501",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000007",
+      "input_hash": "9d7a6b0474450970a357b7b8dd4377790678573244c4cce96e7e9373a17dbda6",
+      "method": "ism",
+      "question_id": "syn_dev_000007_q00",
+      "source_compression_id": "6eed71ff82f4fa487a54d1cd005c04dab1c1a125d5f25358f5aeeffc888ba501",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000007",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000007_q00",
+      "source_compression_id": "6eed71ff82f4fa487a54d1cd005c04dab1c1a125d5f25358f5aeeffc888ba501",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000007",
+      "input_hash": "d0724414a14931fa700a96b913aec07e0366a30c8dc9fa778e9656ca9cd89133",
+      "method": "full_context",
+      "question_id": "syn_dev_000007_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000007",
+      "input_hash": "a24733faf3407b6d544d2ad40f2ffb2b916ca011d75b814fb35094b95131869f",
+      "method": "ism",
+      "question_id": "syn_dev_000007_q01",
+      "source_compression_id": "6eed71ff82f4fa487a54d1cd005c04dab1c1a125d5f25358f5aeeffc888ba501",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000007",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000007_q01",
+      "source_compression_id": "6eed71ff82f4fa487a54d1cd005c04dab1c1a125d5f25358f5aeeffc888ba501",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000007",
+      "input_hash": "9d7a6b0474450970a357b7b8dd4377790678573244c4cce96e7e9373a17dbda6",
+      "method": "ism",
+      "question_id": "syn_dev_000007_q01",
+      "source_compression_id": "6eed71ff82f4fa487a54d1cd005c04dab1c1a125d5f25358f5aeeffc888ba501",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000007",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000007_q01",
+      "source_compression_id": "6eed71ff82f4fa487a54d1cd005c04dab1c1a125d5f25358f5aeeffc888ba501",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000008",
+      "input_hash": "44fa6838c60c3be12dffb1143956028a4d3b896dd9d839014af82caccdfd6930",
+      "method": "full_context",
+      "question_id": "syn_dev_000008_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000008",
+      "input_hash": "98cf1baa3b8a6cdbc0a1fbee7f8a1e59f2814b0b41734199e5cdb6fbc662d2f7",
+      "method": "ism",
+      "question_id": "syn_dev_000008_q00",
+      "source_compression_id": "b45a880a475aacbcfb6e2ede8b79e706bcf2e8cd66b6434d9125cb9ff7871660",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000008",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000008_q00",
+      "source_compression_id": "b45a880a475aacbcfb6e2ede8b79e706bcf2e8cd66b6434d9125cb9ff7871660",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000008",
+      "input_hash": "86d6b3fa78428485b69fcb8903e966673563f738c68b6fc55e9a32d10439fec4",
+      "method": "ism",
+      "question_id": "syn_dev_000008_q00",
+      "source_compression_id": "b45a880a475aacbcfb6e2ede8b79e706bcf2e8cd66b6434d9125cb9ff7871660",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000008",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000008_q00",
+      "source_compression_id": "b45a880a475aacbcfb6e2ede8b79e706bcf2e8cd66b6434d9125cb9ff7871660",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000008",
+      "input_hash": "44fa6838c60c3be12dffb1143956028a4d3b896dd9d839014af82caccdfd6930",
+      "method": "full_context",
+      "question_id": "syn_dev_000008_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000008",
+      "input_hash": "98cf1baa3b8a6cdbc0a1fbee7f8a1e59f2814b0b41734199e5cdb6fbc662d2f7",
+      "method": "ism",
+      "question_id": "syn_dev_000008_q01",
+      "source_compression_id": "b45a880a475aacbcfb6e2ede8b79e706bcf2e8cd66b6434d9125cb9ff7871660",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000008",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000008_q01",
+      "source_compression_id": "b45a880a475aacbcfb6e2ede8b79e706bcf2e8cd66b6434d9125cb9ff7871660",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000008",
+      "input_hash": "86d6b3fa78428485b69fcb8903e966673563f738c68b6fc55e9a32d10439fec4",
+      "method": "ism",
+      "question_id": "syn_dev_000008_q01",
+      "source_compression_id": "b45a880a475aacbcfb6e2ede8b79e706bcf2e8cd66b6434d9125cb9ff7871660",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000008",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000008_q01",
+      "source_compression_id": "b45a880a475aacbcfb6e2ede8b79e706bcf2e8cd66b6434d9125cb9ff7871660",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000009",
+      "input_hash": "f1be7b4849db5bb0b61ed4066532bea6a9cb80a04c5be1106daadf8c787dae39",
+      "method": "full_context",
+      "question_id": "syn_dev_000009_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000009",
+      "input_hash": "a7dab04c7a0cd471d6312653676b5ddb46fd06a67690f47b9f500cc54bf9daab",
+      "method": "ism",
+      "question_id": "syn_dev_000009_q00",
+      "source_compression_id": "af493da9cafbcfd6bc63f6b78e950660487566d10e6f4f72af9e50d9be98da56",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000009",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000009_q00",
+      "source_compression_id": "af493da9cafbcfd6bc63f6b78e950660487566d10e6f4f72af9e50d9be98da56",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000009",
+      "input_hash": "d6c535483eb76dd4597d1ef15fc5f54c25abcf08b05208f9d1cb929578c42ef0",
+      "method": "ism",
+      "question_id": "syn_dev_000009_q00",
+      "source_compression_id": "af493da9cafbcfd6bc63f6b78e950660487566d10e6f4f72af9e50d9be98da56",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000009",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000009_q00",
+      "source_compression_id": "af493da9cafbcfd6bc63f6b78e950660487566d10e6f4f72af9e50d9be98da56",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000009",
+      "input_hash": "f1be7b4849db5bb0b61ed4066532bea6a9cb80a04c5be1106daadf8c787dae39",
+      "method": "full_context",
+      "question_id": "syn_dev_000009_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000009",
+      "input_hash": "a7dab04c7a0cd471d6312653676b5ddb46fd06a67690f47b9f500cc54bf9daab",
+      "method": "ism",
+      "question_id": "syn_dev_000009_q01",
+      "source_compression_id": "af493da9cafbcfd6bc63f6b78e950660487566d10e6f4f72af9e50d9be98da56",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000009",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000009_q01",
+      "source_compression_id": "af493da9cafbcfd6bc63f6b78e950660487566d10e6f4f72af9e50d9be98da56",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000009",
+      "input_hash": "d6c535483eb76dd4597d1ef15fc5f54c25abcf08b05208f9d1cb929578c42ef0",
+      "method": "ism",
+      "question_id": "syn_dev_000009_q01",
+      "source_compression_id": "af493da9cafbcfd6bc63f6b78e950660487566d10e6f4f72af9e50d9be98da56",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000009",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000009_q01",
+      "source_compression_id": "af493da9cafbcfd6bc63f6b78e950660487566d10e6f4f72af9e50d9be98da56",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000010",
+      "input_hash": "9c11bdb7a0dcbf6e1180bf7baf1026205381a17a3f709919a23fc3ee2771c6b3",
+      "method": "full_context",
+      "question_id": "syn_dev_000010_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000010",
+      "input_hash": "5d94e1af2b87bba1fe5857e1fed51257df3f59964b495e31f6da6e01b3473e72",
+      "method": "ism",
+      "question_id": "syn_dev_000010_q00",
+      "source_compression_id": "f13be77c0f1402c49fad15daba7e3f4b9de270b0e15324dc9e16c98f521a4a1c",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000010",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000010_q00",
+      "source_compression_id": "f13be77c0f1402c49fad15daba7e3f4b9de270b0e15324dc9e16c98f521a4a1c",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000010",
+      "input_hash": "606da8f0785c7d0fad1532c73252524c867cadb10f2755b96db52a9d641f6b80",
+      "method": "ism",
+      "question_id": "syn_dev_000010_q00",
+      "source_compression_id": "f13be77c0f1402c49fad15daba7e3f4b9de270b0e15324dc9e16c98f521a4a1c",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000010",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000010_q00",
+      "source_compression_id": "f13be77c0f1402c49fad15daba7e3f4b9de270b0e15324dc9e16c98f521a4a1c",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000010",
+      "input_hash": "9c11bdb7a0dcbf6e1180bf7baf1026205381a17a3f709919a23fc3ee2771c6b3",
+      "method": "full_context",
+      "question_id": "syn_dev_000010_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000010",
+      "input_hash": "5d94e1af2b87bba1fe5857e1fed51257df3f59964b495e31f6da6e01b3473e72",
+      "method": "ism",
+      "question_id": "syn_dev_000010_q01",
+      "source_compression_id": "f13be77c0f1402c49fad15daba7e3f4b9de270b0e15324dc9e16c98f521a4a1c",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000010",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000010_q01",
+      "source_compression_id": "f13be77c0f1402c49fad15daba7e3f4b9de270b0e15324dc9e16c98f521a4a1c",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000010",
+      "input_hash": "606da8f0785c7d0fad1532c73252524c867cadb10f2755b96db52a9d641f6b80",
+      "method": "ism",
+      "question_id": "syn_dev_000010_q01",
+      "source_compression_id": "f13be77c0f1402c49fad15daba7e3f4b9de270b0e15324dc9e16c98f521a4a1c",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000010",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000010_q01",
+      "source_compression_id": "f13be77c0f1402c49fad15daba7e3f4b9de270b0e15324dc9e16c98f521a4a1c",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000011",
+      "input_hash": "4cf3556cdf0ec5390465212c9bf9f98a97c96722e56e532ca5d7b92191cef949",
+      "method": "full_context",
+      "question_id": "syn_dev_000011_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000011",
+      "input_hash": "c0f9b9d4f3800e29683c63617b643bf228426b4b8f2d3fcb85dad1cce2f1df0a",
+      "method": "ism",
+      "question_id": "syn_dev_000011_q00",
+      "source_compression_id": "75c9c7e581217400ef7982f403e1a2f4d795ab12212037a3a8c2ca89d0cb7b69",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000011",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000011_q00",
+      "source_compression_id": "75c9c7e581217400ef7982f403e1a2f4d795ab12212037a3a8c2ca89d0cb7b69",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000011",
+      "input_hash": "ee6f8d7089a1da902e0067fbcf0753111fd5a6633f15eee00ab3a1232afe5693",
+      "method": "ism",
+      "question_id": "syn_dev_000011_q00",
+      "source_compression_id": "75c9c7e581217400ef7982f403e1a2f4d795ab12212037a3a8c2ca89d0cb7b69",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000011",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000011_q00",
+      "source_compression_id": "75c9c7e581217400ef7982f403e1a2f4d795ab12212037a3a8c2ca89d0cb7b69",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000011",
+      "input_hash": "4cf3556cdf0ec5390465212c9bf9f98a97c96722e56e532ca5d7b92191cef949",
+      "method": "full_context",
+      "question_id": "syn_dev_000011_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000011",
+      "input_hash": "c0f9b9d4f3800e29683c63617b643bf228426b4b8f2d3fcb85dad1cce2f1df0a",
+      "method": "ism",
+      "question_id": "syn_dev_000011_q01",
+      "source_compression_id": "75c9c7e581217400ef7982f403e1a2f4d795ab12212037a3a8c2ca89d0cb7b69",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000011",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000011_q01",
+      "source_compression_id": "75c9c7e581217400ef7982f403e1a2f4d795ab12212037a3a8c2ca89d0cb7b69",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000011",
+      "input_hash": "ee6f8d7089a1da902e0067fbcf0753111fd5a6633f15eee00ab3a1232afe5693",
+      "method": "ism",
+      "question_id": "syn_dev_000011_q01",
+      "source_compression_id": "75c9c7e581217400ef7982f403e1a2f4d795ab12212037a3a8c2ca89d0cb7b69",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000011",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000011_q01",
+      "source_compression_id": "75c9c7e581217400ef7982f403e1a2f4d795ab12212037a3a8c2ca89d0cb7b69",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000012",
+      "input_hash": "11f688503a1829e9f2b63033809908c65613300ecfec5d9bdde0d892f761f8d6",
+      "method": "full_context",
+      "question_id": "syn_dev_000012_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000012",
+      "input_hash": "412f0f0e2b4ffceb82770d05fac567ba88a74392972a0f1e6e6f7abd7133ecbc",
+      "method": "ism",
+      "question_id": "syn_dev_000012_q00",
+      "source_compression_id": "750088e6b2683b9576230ab77f357203bd5088a6464a913c1c770582f9f7eaaa",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000012",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000012_q00",
+      "source_compression_id": "750088e6b2683b9576230ab77f357203bd5088a6464a913c1c770582f9f7eaaa",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000012",
+      "input_hash": "b49de29e0382675737fd0c80dd7a611cad9592af55f87e146295a82c556e4b03",
+      "method": "ism",
+      "question_id": "syn_dev_000012_q00",
+      "source_compression_id": "750088e6b2683b9576230ab77f357203bd5088a6464a913c1c770582f9f7eaaa",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000012",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000012_q00",
+      "source_compression_id": "750088e6b2683b9576230ab77f357203bd5088a6464a913c1c770582f9f7eaaa",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000012",
+      "input_hash": "11f688503a1829e9f2b63033809908c65613300ecfec5d9bdde0d892f761f8d6",
+      "method": "full_context",
+      "question_id": "syn_dev_000012_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000012",
+      "input_hash": "412f0f0e2b4ffceb82770d05fac567ba88a74392972a0f1e6e6f7abd7133ecbc",
+      "method": "ism",
+      "question_id": "syn_dev_000012_q01",
+      "source_compression_id": "750088e6b2683b9576230ab77f357203bd5088a6464a913c1c770582f9f7eaaa",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000012",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000012_q01",
+      "source_compression_id": "750088e6b2683b9576230ab77f357203bd5088a6464a913c1c770582f9f7eaaa",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000012",
+      "input_hash": "b49de29e0382675737fd0c80dd7a611cad9592af55f87e146295a82c556e4b03",
+      "method": "ism",
+      "question_id": "syn_dev_000012_q01",
+      "source_compression_id": "750088e6b2683b9576230ab77f357203bd5088a6464a913c1c770582f9f7eaaa",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000012",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000012_q01",
+      "source_compression_id": "750088e6b2683b9576230ab77f357203bd5088a6464a913c1c770582f9f7eaaa",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000013",
+      "input_hash": "29732e90a62d3d588db2bfba8910a56d6188e3bbc90498b4c95fefb025c0235f",
+      "method": "full_context",
+      "question_id": "syn_dev_000013_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000013",
+      "input_hash": "a8c8b120929026b41fa7b09f99fdeb87718f393e893af9f42791f0d8b6137916",
+      "method": "ism",
+      "question_id": "syn_dev_000013_q00",
+      "source_compression_id": "70a34419002bad3cbc3564745f73a2dd689c5dfa0c791eacfa40ed909d3d2b32",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000013",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000013_q00",
+      "source_compression_id": "70a34419002bad3cbc3564745f73a2dd689c5dfa0c791eacfa40ed909d3d2b32",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000013",
+      "input_hash": "a342313572761ac1324b7dc661b36b8ac68415b3f51e97b442438ec69ecc1100",
+      "method": "ism",
+      "question_id": "syn_dev_000013_q00",
+      "source_compression_id": "70a34419002bad3cbc3564745f73a2dd689c5dfa0c791eacfa40ed909d3d2b32",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000013",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000013_q00",
+      "source_compression_id": "70a34419002bad3cbc3564745f73a2dd689c5dfa0c791eacfa40ed909d3d2b32",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000013",
+      "input_hash": "29732e90a62d3d588db2bfba8910a56d6188e3bbc90498b4c95fefb025c0235f",
+      "method": "full_context",
+      "question_id": "syn_dev_000013_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000013",
+      "input_hash": "a8c8b120929026b41fa7b09f99fdeb87718f393e893af9f42791f0d8b6137916",
+      "method": "ism",
+      "question_id": "syn_dev_000013_q01",
+      "source_compression_id": "70a34419002bad3cbc3564745f73a2dd689c5dfa0c791eacfa40ed909d3d2b32",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000013",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000013_q01",
+      "source_compression_id": "70a34419002bad3cbc3564745f73a2dd689c5dfa0c791eacfa40ed909d3d2b32",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000013",
+      "input_hash": "a342313572761ac1324b7dc661b36b8ac68415b3f51e97b442438ec69ecc1100",
+      "method": "ism",
+      "question_id": "syn_dev_000013_q01",
+      "source_compression_id": "70a34419002bad3cbc3564745f73a2dd689c5dfa0c791eacfa40ed909d3d2b32",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000013",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000013_q01",
+      "source_compression_id": "70a34419002bad3cbc3564745f73a2dd689c5dfa0c791eacfa40ed909d3d2b32",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000014",
+      "input_hash": "5ef3ef4b1c6820651251abe15aff9a761de97b4974805a6b86cbb47689d573a6",
+      "method": "full_context",
+      "question_id": "syn_dev_000014_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000014",
+      "input_hash": "7f283c2a5edea108a262372b8467197cd895717b7f23a35cb3c93b41b8726a30",
+      "method": "ism",
+      "question_id": "syn_dev_000014_q00",
+      "source_compression_id": "e11c45358d2473a183aec3dadbc8025ae7f8f378ce8059661c1c125a91432fcb",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000014",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000014_q00",
+      "source_compression_id": "e11c45358d2473a183aec3dadbc8025ae7f8f378ce8059661c1c125a91432fcb",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000014",
+      "input_hash": "7194f1b9e90d97933e03653ed0877697d07907f682e6c307b8737717b2406147",
+      "method": "ism",
+      "question_id": "syn_dev_000014_q00",
+      "source_compression_id": "e11c45358d2473a183aec3dadbc8025ae7f8f378ce8059661c1c125a91432fcb",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000014",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000014_q00",
+      "source_compression_id": "e11c45358d2473a183aec3dadbc8025ae7f8f378ce8059661c1c125a91432fcb",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000014",
+      "input_hash": "5ef3ef4b1c6820651251abe15aff9a761de97b4974805a6b86cbb47689d573a6",
+      "method": "full_context",
+      "question_id": "syn_dev_000014_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000014",
+      "input_hash": "7f283c2a5edea108a262372b8467197cd895717b7f23a35cb3c93b41b8726a30",
+      "method": "ism",
+      "question_id": "syn_dev_000014_q01",
+      "source_compression_id": "e11c45358d2473a183aec3dadbc8025ae7f8f378ce8059661c1c125a91432fcb",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000014",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000014_q01",
+      "source_compression_id": "e11c45358d2473a183aec3dadbc8025ae7f8f378ce8059661c1c125a91432fcb",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000014",
+      "input_hash": "7194f1b9e90d97933e03653ed0877697d07907f682e6c307b8737717b2406147",
+      "method": "ism",
+      "question_id": "syn_dev_000014_q01",
+      "source_compression_id": "e11c45358d2473a183aec3dadbc8025ae7f8f378ce8059661c1c125a91432fcb",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000014",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000014_q01",
+      "source_compression_id": "e11c45358d2473a183aec3dadbc8025ae7f8f378ce8059661c1c125a91432fcb",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000015",
+      "input_hash": "2f36cca557c1a75a08866304426de8c4164fcb38a980432cde07352067a54dd3",
+      "method": "full_context",
+      "question_id": "syn_dev_000015_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000015",
+      "input_hash": "0f4ca892abf41b1e3b115c6840c9b4ad0a47c759490fbf497fb1633a9603d279",
+      "method": "ism",
+      "question_id": "syn_dev_000015_q00",
+      "source_compression_id": "a9b9fd2f2e8c9eb2d19d52c782e6a7cc3584ecaaf52d2a2d8f9043ca8081bd20",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000015",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000015_q00",
+      "source_compression_id": "a9b9fd2f2e8c9eb2d19d52c782e6a7cc3584ecaaf52d2a2d8f9043ca8081bd20",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000015",
+      "input_hash": "1bc5e12819f9930a0fee20c5484f732b1efd9c2871c484187ebf8e60cc87d0c1",
+      "method": "ism",
+      "question_id": "syn_dev_000015_q00",
+      "source_compression_id": "a9b9fd2f2e8c9eb2d19d52c782e6a7cc3584ecaaf52d2a2d8f9043ca8081bd20",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000015",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000015_q00",
+      "source_compression_id": "a9b9fd2f2e8c9eb2d19d52c782e6a7cc3584ecaaf52d2a2d8f9043ca8081bd20",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000015",
+      "input_hash": "2f36cca557c1a75a08866304426de8c4164fcb38a980432cde07352067a54dd3",
+      "method": "full_context",
+      "question_id": "syn_dev_000015_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000015",
+      "input_hash": "0f4ca892abf41b1e3b115c6840c9b4ad0a47c759490fbf497fb1633a9603d279",
+      "method": "ism",
+      "question_id": "syn_dev_000015_q01",
+      "source_compression_id": "a9b9fd2f2e8c9eb2d19d52c782e6a7cc3584ecaaf52d2a2d8f9043ca8081bd20",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000015",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000015_q01",
+      "source_compression_id": "a9b9fd2f2e8c9eb2d19d52c782e6a7cc3584ecaaf52d2a2d8f9043ca8081bd20",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000015",
+      "input_hash": "1bc5e12819f9930a0fee20c5484f732b1efd9c2871c484187ebf8e60cc87d0c1",
+      "method": "ism",
+      "question_id": "syn_dev_000015_q01",
+      "source_compression_id": "a9b9fd2f2e8c9eb2d19d52c782e6a7cc3584ecaaf52d2a2d8f9043ca8081bd20",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000015",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000015_q01",
+      "source_compression_id": "a9b9fd2f2e8c9eb2d19d52c782e6a7cc3584ecaaf52d2a2d8f9043ca8081bd20",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000016",
+      "input_hash": "0f91cc79b2a887075c97587b37c82e68b0f22a284e7bf85f48c46b5ad2c42898",
+      "method": "full_context",
+      "question_id": "syn_dev_000016_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000016",
+      "input_hash": "8c01628d797f8ca6ea77cf81573211d936341280a6faf0f2ceddc3a0cf9bbcf3",
+      "method": "ism",
+      "question_id": "syn_dev_000016_q00",
+      "source_compression_id": "99a752a02d616ac56ecd44a10f9b422981b81d560a8fe128c6cd000be410b0e5",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000016",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000016_q00",
+      "source_compression_id": "99a752a02d616ac56ecd44a10f9b422981b81d560a8fe128c6cd000be410b0e5",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000016",
+      "input_hash": "3cc53bbadf631745ec47ea24256e231cbb81b35d0d63b8bc26a1a0136d423286",
+      "method": "ism",
+      "question_id": "syn_dev_000016_q00",
+      "source_compression_id": "99a752a02d616ac56ecd44a10f9b422981b81d560a8fe128c6cd000be410b0e5",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000016",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000016_q00",
+      "source_compression_id": "99a752a02d616ac56ecd44a10f9b422981b81d560a8fe128c6cd000be410b0e5",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000016",
+      "input_hash": "0f91cc79b2a887075c97587b37c82e68b0f22a284e7bf85f48c46b5ad2c42898",
+      "method": "full_context",
+      "question_id": "syn_dev_000016_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000016",
+      "input_hash": "8c01628d797f8ca6ea77cf81573211d936341280a6faf0f2ceddc3a0cf9bbcf3",
+      "method": "ism",
+      "question_id": "syn_dev_000016_q01",
+      "source_compression_id": "99a752a02d616ac56ecd44a10f9b422981b81d560a8fe128c6cd000be410b0e5",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000016",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000016_q01",
+      "source_compression_id": "99a752a02d616ac56ecd44a10f9b422981b81d560a8fe128c6cd000be410b0e5",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000016",
+      "input_hash": "3cc53bbadf631745ec47ea24256e231cbb81b35d0d63b8bc26a1a0136d423286",
+      "method": "ism",
+      "question_id": "syn_dev_000016_q01",
+      "source_compression_id": "99a752a02d616ac56ecd44a10f9b422981b81d560a8fe128c6cd000be410b0e5",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000016",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000016_q01",
+      "source_compression_id": "99a752a02d616ac56ecd44a10f9b422981b81d560a8fe128c6cd000be410b0e5",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000017",
+      "input_hash": "c73d4db1484126c3f5978cbe25d09798359e52797f939e2e2f1097026feaf12a",
+      "method": "full_context",
+      "question_id": "syn_dev_000017_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000017",
+      "input_hash": "6896e9b5b55fe3a42512f3c7e099a9b2d3771a4c31e3bd2bc6831f7d4954f031",
+      "method": "ism",
+      "question_id": "syn_dev_000017_q00",
+      "source_compression_id": "c49391cf939ef3275e6d48b7381559a575f755b40f2ecc86744782a1ab034bc1",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000017",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000017_q00",
+      "source_compression_id": "c49391cf939ef3275e6d48b7381559a575f755b40f2ecc86744782a1ab034bc1",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000017",
+      "input_hash": "f4dfe95effbb31b18821874b01c21182a1c99d3a19dede535e27d0ec84dfa962",
+      "method": "ism",
+      "question_id": "syn_dev_000017_q00",
+      "source_compression_id": "c49391cf939ef3275e6d48b7381559a575f755b40f2ecc86744782a1ab034bc1",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000017",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000017_q00",
+      "source_compression_id": "c49391cf939ef3275e6d48b7381559a575f755b40f2ecc86744782a1ab034bc1",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000017",
+      "input_hash": "c73d4db1484126c3f5978cbe25d09798359e52797f939e2e2f1097026feaf12a",
+      "method": "full_context",
+      "question_id": "syn_dev_000017_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000017",
+      "input_hash": "6896e9b5b55fe3a42512f3c7e099a9b2d3771a4c31e3bd2bc6831f7d4954f031",
+      "method": "ism",
+      "question_id": "syn_dev_000017_q01",
+      "source_compression_id": "c49391cf939ef3275e6d48b7381559a575f755b40f2ecc86744782a1ab034bc1",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000017",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000017_q01",
+      "source_compression_id": "c49391cf939ef3275e6d48b7381559a575f755b40f2ecc86744782a1ab034bc1",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000017",
+      "input_hash": "f4dfe95effbb31b18821874b01c21182a1c99d3a19dede535e27d0ec84dfa962",
+      "method": "ism",
+      "question_id": "syn_dev_000017_q01",
+      "source_compression_id": "c49391cf939ef3275e6d48b7381559a575f755b40f2ecc86744782a1ab034bc1",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000017",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000017_q01",
+      "source_compression_id": "c49391cf939ef3275e6d48b7381559a575f755b40f2ecc86744782a1ab034bc1",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000018",
+      "input_hash": "85ec1fa07d4e04c2e66c37a149436dc9336f59bff48c89e67abd083234e234c5",
+      "method": "full_context",
+      "question_id": "syn_dev_000018_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000018",
+      "input_hash": "459519e3344b135e015ab0a54c750d992f394f6a9204b28cb22d74337673c905",
+      "method": "ism",
+      "question_id": "syn_dev_000018_q00",
+      "source_compression_id": "c06c8a2268bfa63f51e35ad3462d6db7a4039a807626147aff9285d96be6ef1b",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000018",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000018_q00",
+      "source_compression_id": "c06c8a2268bfa63f51e35ad3462d6db7a4039a807626147aff9285d96be6ef1b",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000018",
+      "input_hash": "1e31721780cd1a0980e01d00bb95c67e0fca3b061ff044a42422e47a1bccbac1",
+      "method": "ism",
+      "question_id": "syn_dev_000018_q00",
+      "source_compression_id": "c06c8a2268bfa63f51e35ad3462d6db7a4039a807626147aff9285d96be6ef1b",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000018",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000018_q00",
+      "source_compression_id": "c06c8a2268bfa63f51e35ad3462d6db7a4039a807626147aff9285d96be6ef1b",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000018",
+      "input_hash": "85ec1fa07d4e04c2e66c37a149436dc9336f59bff48c89e67abd083234e234c5",
+      "method": "full_context",
+      "question_id": "syn_dev_000018_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000018",
+      "input_hash": "459519e3344b135e015ab0a54c750d992f394f6a9204b28cb22d74337673c905",
+      "method": "ism",
+      "question_id": "syn_dev_000018_q01",
+      "source_compression_id": "c06c8a2268bfa63f51e35ad3462d6db7a4039a807626147aff9285d96be6ef1b",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000018",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000018_q01",
+      "source_compression_id": "c06c8a2268bfa63f51e35ad3462d6db7a4039a807626147aff9285d96be6ef1b",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000018",
+      "input_hash": "1e31721780cd1a0980e01d00bb95c67e0fca3b061ff044a42422e47a1bccbac1",
+      "method": "ism",
+      "question_id": "syn_dev_000018_q01",
+      "source_compression_id": "c06c8a2268bfa63f51e35ad3462d6db7a4039a807626147aff9285d96be6ef1b",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000018",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000018_q01",
+      "source_compression_id": "c06c8a2268bfa63f51e35ad3462d6db7a4039a807626147aff9285d96be6ef1b",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000019",
+      "input_hash": "9b11a54ef29f0b1b5a8d6b10b5c1c01365240cf32fc4011ceb9210e82523979c",
+      "method": "full_context",
+      "question_id": "syn_dev_000019_q00",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000019",
+      "input_hash": "f279d01ab3c5296e01f0416a9d0c6cd172c14251284b7df4e705a37a2e63e0fc",
+      "method": "ism",
+      "question_id": "syn_dev_000019_q00",
+      "source_compression_id": "d59476f8bba4222961e07b4a44dba8491050d3d71898263e1d64fb77e7ce0356",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000019",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000019_q00",
+      "source_compression_id": "d59476f8bba4222961e07b4a44dba8491050d3d71898263e1d64fb77e7ce0356",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000019",
+      "input_hash": "769cebfda266ceecabd5a760023e2125ce43d10dc3ccadd358ffa1b14af23f3e",
+      "method": "ism",
+      "question_id": "syn_dev_000019_q00",
+      "source_compression_id": "d59476f8bba4222961e07b4a44dba8491050d3d71898263e1d64fb77e7ce0356",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000019",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000019_q00",
+      "source_compression_id": "d59476f8bba4222961e07b4a44dba8491050d3d71898263e1d64fb77e7ce0356",
+      "token_count": 107
+    },
+    {
+      "condition": "full_context",
+      "document_id": "syn_dev_000019",
+      "input_hash": "9b11a54ef29f0b1b5a8d6b10b5c1c01365240cf32fc4011ceb9210e82523979c",
+      "method": "full_context",
+      "question_id": "syn_dev_000019_q01",
+      "source_compression_id": null,
+      "token_count": 132
+    },
+    {
+      "condition": "full_symbol_dict",
+      "document_id": "syn_dev_000019",
+      "input_hash": "f279d01ab3c5296e01f0416a9d0c6cd172c14251284b7df4e705a37a2e63e0fc",
+      "method": "ism",
+      "question_id": "syn_dev_000019_q01",
+      "source_compression_id": "d59476f8bba4222961e07b4a44dba8491050d3d71898263e1d64fb77e7ce0356",
+      "token_count": 108
+    },
+    {
+      "condition": "symbol_only",
+      "document_id": "syn_dev_000019",
+      "input_hash": "d05ecc1c85ae9da1d8d2ecd4262b0dda5c5f51711a1847a3cf0942eff0457fc1",
+      "method": "ism",
+      "question_id": "syn_dev_000019_q01",
+      "source_compression_id": "d59476f8bba4222961e07b4a44dba8491050d3d71898263e1d64fb77e7ce0356",
+      "token_count": 8
+    },
+    {
+      "condition": "corrupted_dict",
+      "document_id": "syn_dev_000019",
+      "input_hash": "769cebfda266ceecabd5a760023e2125ce43d10dc3ccadd358ffa1b14af23f3e",
+      "method": "ism",
+      "question_id": "syn_dev_000019_q01",
+      "source_compression_id": "d59476f8bba4222961e07b4a44dba8491050d3d71898263e1d64fb77e7ce0356",
+      "token_count": 108
+    },
+    {
+      "condition": "random_symbol",
+      "document_id": "syn_dev_000019",
+      "input_hash": "eeb2385ab62f6789954a0fe31a6399138a62c7ff4709f1f95fbb2f6b7c418651",
+      "method": "ism",
+      "question_id": "syn_dev_000019_q01",
+      "source_compression_id": "d59476f8bba4222961e07b4a44dba8491050d3d71898263e1d64fb77e7ce0356",
+      "token_count": 107
+    }
+  ]
+}

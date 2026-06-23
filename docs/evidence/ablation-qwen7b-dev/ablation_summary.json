@@ -1,0 +1,66 @@
+{
+  "conditions": [
+    {
+      "accuracy": 0.55,
+      "accuracy_retention": 0.7857142857142858,
+      "compression_ratio": 0.8181818181818182,
+      "condition": "corrupted_dict",
+      "efficiency_score": 0.9603174603174603
+    },
+    {
+      "accuracy": 0.7,
+      "accuracy_retention": 1.0,
+      "compression_ratio": 1.0,
+      "condition": "full_context",
+      "efficiency_score": 1.0
+    },
+    {
+      "accuracy": 0.55,
+      "accuracy_retention": 0.7857142857142858,
+      "compression_ratio": 0.8181818181818182,
+      "condition": "full_symbol_dict",
+      "efficiency_score": 0.9603174603174603
+    },
+    {
+      "accuracy": 0.25,
+      "accuracy_retention": 0.35714285714285715,
+      "compression_ratio": 0.8106060606060606,
+      "condition": "random_symbol",
+      "efficiency_score": 0.4405874499332444
+    },
+    {
+      "accuracy": 0.225,
+      "accuracy_retention": 0.32142857142857145,
+      "compression_ratio": 0.06060606060606061,
+      "condition": "symbol_only",
+      "efficiency_score": 5.303571428571429
+    }
+  ],
+  "contrasts": [
+    {
+      "ci_lower": 0.0,
+      "ci_upper": 0.0,
+      "estimate": 0.0,
+      "left": "full_symbol_dict",
+      "mcnemar_p": 1,
+      "n": 40,
+      "name": "delta_map",
+      "right": "corrupted_dict"
+    },
+    {
+      "ci_lower": -0.075,
+      "ci_upper": 0.0,
+      "estimate": -0.025,
+      "left": "symbol_only",
+      "mcnemar_p": 1,
+      "n": 40,
+      "name": "delta_symbol",
+      "right": "random_symbol"
+    }
+  ],
+  "documents": 20,
+  "predictions": 200,
+  "questions": 40,
+  "run_id": "ablation-qwen7b-dev",
+  "successful": 200
+}

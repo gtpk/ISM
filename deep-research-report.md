@@ -342,6 +342,36 @@ Synthetic Rule-QA에서는 gold graph를 사용해 다음을 추가 분석한다
 
 ### 8.1 Dictionary Ablation
 
+#### 8.1.1 예비 결과 (dev pilot — 등록 규모 아님)
+
+> **주의:** 아래는 파이프라인 검증용 dev 파일럿이다. N=40 문항(20 문서 × 2 질문),
+> 단일 seed, Qwen2.5-7B-Instruct 4-bit prompt-only이며, ISM 표현은 **gold rule graph로부터
+> 결정적으로 생성**한 것이다(논문 메인 설정인 LLM 압축기 산출물이 아님). 비교군
+> Model Summary는 미구현으로 제외했다. 따라서 RQ1의 결론 근거가 아니라 **예비 신호**다.
+> 증거: [docs/evidence/ablation-qwen7b-dev/](../docs/evidence/ablation-qwen7b-dev/README.md),
+> config_hash `204d4b4b…`, commit `40a23b9`.
+
+| 조건 | Accuracy | AR | CR | ES |
+|---|---:|---:|---:|---:|
+| Full Context | 0.700 | 1.000 | 1.000 | 1.000 |
+| Full Symbol + Dict | 0.550 | 0.786 | 0.818 | 0.960 |
+| Corrupted Dict | 0.550 | 0.786 | 0.818 | 0.960 |
+| Symbol Only | 0.225 | 0.321 | 0.061 | 5.304 |
+| Random Symbol | 0.250 | 0.357 | 0.811 | 0.441 |
+
+- \(\Delta_{\mathrm{map}}\) = Acc(Full+Dict) − Acc(Corrupt) = **0.000**, 95% CI [0.000, 0.000], McNemar p=1.0 (n=40)
+- \(\Delta_{\mathrm{symbol}}\) = Acc(SymbolOnly) − Acc(Random) = **−0.025**, 95% CI [−0.075, 0.000], McNemar p=1.0 (n=40)
+
+예비 보고:
+
+> 이 dev 파일럿에서 Full Symbol + Dict(0.55)와 Corrupted Dict(0.55)는 문항별로 동일한
+> 정오답을 보여 \(\Delta_{\mathrm{map}}=0\)이었고, Symbol Only(0.225)는 Random Symbol(0.25)을
+> 능가하지 못했다(\(\Delta_{\mathrm{symbol}}=-0.025\)). 즉 이 설정에서는 사전 매핑의 기능적
+> 사용 근거가 관찰되지 않았다. 다만 gold-derived 표현·소규모·단일 seed라는 한계가 크므로,
+> 부록 A 기준 #2의 충족 여부는 **LLM 압축기 산출물과 등록 규모 실행 후** 확정한다.
+
+#### 8.1.2 등록 규모 결과 (실험 완료 후 채움)
+
 | 조건 | Accuracy | AR | Full+Dict 대비 차이 | 95% CI |
 |---|---:|---:|---:|---:|
 | Full Context | [ ] | 1.000 | - | [ ] |
