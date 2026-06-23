@@ -8,7 +8,8 @@
 | S1 | GPU 모델 로드 + 1 batch (Qwen2.5-7B 4-bit) | PASS (acc 0.70) | [s1-qwen7b/](s1-qwen7b/README.md) |
 | 6.1 (LLM 압축기, 메인) | Dictionary Ablation dev pilot, N=36 | 예비 (Δmap≈0, Δsymbol n.s.) | [ablation-qwen7b-llm-dev/](ablation-qwen7b-llm-dev/README.md) |
 | 6.1 (gold-oracle, 강건성) | Dictionary Ablation dev pilot, N=40 | 예비 (Δmap=0, Δsymbol≈0) | [ablation-qwen7b-dev/](ablation-qwen7b-dev/README.md) |
-| 진단 | compress-audit (LLM ISM 구조) | purity 0.70 / self-cont 0.71 / rel-struct 0.79 | [compress-audit-qwen7b-dev/](compress-audit-qwen7b-dev/README.md) |
+| 진단 v1 | compress-audit (LLM ISM 구조) | purity 0.70 / self-cont 0.71 | [compress-audit-qwen7b-dev/](compress-audit-qwen7b-dev/README.md) |
+| 진단 v2 | compress-audit (결론 강제 압축기, 71205fe) | purity 1.0 / self-cont 1.0, 단 실패 6/20(empty_relations) | [compress-audit-qwen7b-v2/](compress-audit-qwen7b-v2/README.md) |
 
 ## S0 — config parity (COL-ENV-004)
 
