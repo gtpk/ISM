@@ -28,13 +28,15 @@ from ism.inference.runner import InferenceRunner, InferenceSample
 from ism.representation.models import ISMRepresentation
 from ism.representation.tokenizer import WhitespaceTokenCounter
 
-# Pre-registered contrasts (paper 6.1): (name, left, right).
-# - delta_map: label-binding sensitivity (derangement preserves the rule set).
-# - delta_map_strong: dictionary semantic-content sensitivity (conclusions flipped).
-# - delta_symbol: symbol structure vs length-matched random noise.
+# Contrasts (paper 6.1, amended in Appendix A.1): (name, left, right).
+# - delta_map_derange: label-binding sensitivity (derangement preserves the rule
+#   set; secondary diagnostic only).
+# - delta_map_flip: dictionary semantic-content sensitivity (conclusions flipped;
+#   the amended primary dictionary-dependence contrast).
+# - delta_symbol: symbolic-structure sensitivity (symbols vs length-matched noise).
 _CONTRASTS = (
-    ("delta_map", "full_symbol_dict", "corrupted_dict"),
-    ("delta_map_strong", "full_symbol_dict", "flipped_dict"),
+    ("delta_map_derange", "full_symbol_dict", "corrupted_dict"),
+    ("delta_map_flip", "full_symbol_dict", "flipped_dict"),
     ("delta_symbol", "symbol_only", "random_symbol"),
 )
 

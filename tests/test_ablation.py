@@ -83,7 +83,8 @@ def test_ablation_reports_preregistered_contrasts(tmp_path: Path) -> None:
     config = load_config(MOCK_CONFIG)
     summary = run_ablation_experiment(config, output_dir=tmp_path, generator=MockTextGenerator())
     names = {contrast.name for contrast in summary.contrasts}
-    assert names == {"delta_map", "delta_symbol"}
+    # The mock config has no flipped_dict, so delta_map_flip is absent here.
+    assert names == {"delta_map_derange", "delta_symbol"}
     # Mock answers everything correctly, so both contrasts are exactly zero.
     for contrast in summary.contrasts:
         assert contrast.estimate == 0.0
@@ -126,5 +127,9 @@ def test_llm_backend_uses_llm_compressor(tmp_path: Path) -> None:
         "blank_dict",
         "random_symbol",
     }
-    # Both label-binding and semantic-content contrasts are reported.
-    assert {c.name for c in summary.contrasts} == {"delta_map", "delta_map_strong", "delta_symbol"}
+    # Label-binding, semantic-content, and structure contrasts are reported.
+    assert {c.name for c in summary.contrasts} == {
+        "delta_map_derange",
+        "delta_map_flip",
+        "delta_symbol",
+    }
