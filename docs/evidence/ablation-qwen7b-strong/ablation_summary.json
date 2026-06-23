@@ -1,0 +1,97 @@
+{
+  "compression": {
+    "compressed": 20,
+    "documents": 20,
+    "failures": 0,
+    "mean_attempts": 1.0,
+    "source": "llm"
+  },
+  "conditions": [
+    {
+      "accuracy": 0.225,
+      "accuracy_retention": 0.32142857142857145,
+      "compression_ratio": 0.20606060606060606,
+      "condition": "blank_dict",
+      "efficiency_score": 1.5598739495798322
+    },
+    {
+      "accuracy": 0.45,
+      "accuracy_retention": 0.6428571428571429,
+      "compression_ratio": 0.7295454545454545,
+      "condition": "corrupted_dict",
+      "efficiency_score": 0.8811748998664888
+    },
+    {
+      "accuracy": 0.325,
+      "accuracy_retention": 0.46428571428571436,
+      "compression_ratio": 0.7295454545454545,
+      "condition": "flipped_dict",
+      "efficiency_score": 0.6364040943480197
+    },
+    {
+      "accuracy": 0.7,
+      "accuracy_retention": 1.0,
+      "compression_ratio": 1.0,
+      "condition": "full_context",
+      "efficiency_score": 1.0
+    },
+    {
+      "accuracy": 0.5,
+      "accuracy_retention": 0.7142857142857143,
+      "compression_ratio": 0.7295454545454545,
+      "condition": "full_symbol_dict",
+      "efficiency_score": 0.9790832220738763
+    },
+    {
+      "accuracy": 0.25,
+      "accuracy_retention": 0.35714285714285715,
+      "compression_ratio": 0.7219696969696969,
+      "condition": "random_symbol",
+      "efficiency_score": 0.494678459001649
+    },
+    {
+      "accuracy": 0.45,
+      "accuracy_retention": 0.6428571428571429,
+      "compression_ratio": 0.0696969696969697,
+      "condition": "symbol_only",
+      "efficiency_score": 9.22360248447205
+    }
+  ],
+  "contrasts": [
+    {
+      "ci_lower": -0.175,
+      "ci_upper": 0.275,
+      "estimate": 0.05,
+      "left": "full_symbol_dict",
+      "mcnemar_p": 0.8318119049072266,
+      "n": 40,
+      "name": "delta_map",
+      "right": "corrupted_dict"
+    },
+    {
+      "ci_lower": 0.0,
+      "ci_upper": 0.35,
+      "estimate": 0.175,
+      "left": "full_symbol_dict",
+      "mcnemar_p": 0.11846923828125,
+      "n": 40,
+      "name": "delta_map_strong",
+      "right": "flipped_dict"
+    },
+    {
+      "ci_lower": 0.075,
+      "ci_upper": 0.35,
+      "estimate": 0.2,
+      "left": "symbol_only",
+      "mcnemar_p": 0.021484375,
+      "n": 40,
+      "name": "delta_symbol",
+      "right": "random_symbol"
+    }
+  ],
+  "documents": 20,
+  "predictions": 280,
+  "questions": 40,
+  "run_id": "ablation-qwen7b-dev",
+  "successful": 280
+}

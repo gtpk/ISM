@@ -344,41 +344,46 @@ Synthetic Rule-QA에서는 gold graph를 사용해 다음을 추가 분석한다
 
 #### 8.1.1 예비 결과 (dev pilot — 등록 규모 아님)
 
-> **주의:** 아래는 dev 파일럿이며 등록 규모가 아니다. Qwen2.5-7B-Instruct 4-bit(압축기=추론기),
-> greedy, 단일 seed. 비교군 Model Summary는 미구현으로 제외했다. RQ1 결론 근거가 아니라
-> **예비 신호**다.
+> **주의:** dev 파일럿(N=40), 등록 규모 아님. Qwen2.5-7B-Instruct 4-bit(압축기=추론기),
+> greedy, 단일 seed. 비교군 Model Summary는 미구현으로 제외. RQ1 **결론**이 아니라 예비 신호다.
+> 진단 경과는 [docs/reviews/llm-ism-diagnostic.md](../docs/reviews/llm-ism-diagnostic.md).
 
-**메인 설정 (LLM 압축기).** ISM을 LLM 압축기로 생성하고 `parse_ism`으로 구조화했다.
-20 문서 중 18개가 유효한 ISM으로 압축됐다(2 실패, 평균 1.06회 생성). N=36 문항.
-증거: [docs/evidence/ablation-qwen7b-llm-dev/](../docs/evidence/ablation-qwen7b-llm-dev/README.md),
-config_hash `204d4b4b…`, commit `eb2bdda`.
+이 절은 두 개의 개입 강도를 구분한다. **derangement**(사전 정의를 라벨 간 순열; 정의 집합은
+보존)는 *라벨-바인딩* 민감도를 측정하고, **conclusion flip**(결론 HIGH↔LOW, True↔False 반전;
+조건은 유지)은 *사전 의미내용* 민감도를 측정한다. 초기 파일럿에서 관찰된 \(\Delta_{\mathrm{map}}\approx0\)은
+(1) 압축기가 결론을 누락한 낮은 purity와 (2) 내용을 보존하는 derangement의 산물이었다(진단 참조).
+아래는 압축기 purity를 1.0으로 끌어올리고(결론 포함 강제) 내용 변경형 corruption을 추가한 뒤의
+결과다. 증거: [docs/evidence/ablation-qwen7b-strong/](../docs/evidence/ablation-qwen7b-strong/README.md),
+config_hash `15c72cfd…`, commit `7be5618`, 압축 20/20.
 
-| 조건 | Accuracy | AR | CR | ES |
-|---|---:|---:|---:|---:|
-| Full Context | 0.694 | 1.000 | 1.000 | 1.000 |
-| Full Symbol + Dict | 0.500 | 0.720 | 0.562 | 1.280 |
-| Corrupted Dict | 0.528 | 0.760 | 0.562 | 1.352 |
-| Symbol Only | 0.361 | 0.520 | 0.109 | 4.770 |
-| Random Symbol | 0.333 | 0.480 | 0.555 | 0.865 |
+| 조건 | Accuracy | AR | CR |
+|---|---:|---:|---:|
+| Full Context | 0.700 | 1.000 | 1.000 |
+| Full Symbol + Dict | 0.500 | 0.714 | 0.730 |
+| Corrupted Dict (derangement) | 0.450 | 0.643 | 0.730 |
+| Flipped Dict (conclusion flip) | 0.325 | 0.464 | 0.730 |
+| Blank Dict | 0.225 | 0.321 | 0.206 |
+| Symbol Only | 0.450 | 0.643 | 0.070 |
+| Random Symbol | 0.250 | 0.357 | 0.722 |
 
-- \(\Delta_{\mathrm{map}}\) = Acc(Full+Dict) − Acc(Corrupt) = **−0.028**, 95% CI [−0.167, 0.083], McNemar p=1.0 (n=36)
-- \(\Delta_{\mathrm{symbol}}\) = Acc(SymbolOnly) − Acc(Random) = **+0.028**, 95% CI [−0.139, 0.194], McNemar p=1.0 (n=36)
+- \(\Delta_{\mathrm{map}}\) (label-binding) = Acc(Full+Dict) − Acc(Corrupt) = **+0.050**, 95% CI [−0.175, 0.275], McNemar p=0.83 (n=40)
+- \(\Delta_{\mathrm{map}}^{\mathrm{strong}}\) (semantic-content) = Acc(Full+Dict) − Acc(Flipped) = **+0.175**, 95% CI [0.000, 0.350], McNemar p=0.12 (n=40)
+- \(\Delta_{\mathrm{symbol}}\) = Acc(SymbolOnly) − Acc(Random) = **+0.200**, 95% CI [0.075, 0.350], McNemar p=0.021 (n=40)
 
 예비 보고:
 
-> LLM 압축기 산출물에서도 Full Symbol + Dict(0.500)와 Corrupted Dict(0.528)의 차이가
-> \(\Delta_{\mathrm{map}}=-0.028\)(95% CI가 0 포함)로 **사전 오염이 정확도를 떨어뜨리지 않았다.**
-> Symbol Only(0.361)는 Random Symbol(0.333)보다 약간 높았으나 유의하지 않았다
-> (\(\Delta_{\mathrm{symbol}}=+0.028\), CI [−0.14, 0.19]). 즉 이 규모에서는 사전 매핑의 기능적
-> 사용 근거가 관찰되지 않으며, 부록 A 기준 #2는 충족되지 않는다.
+> 사전 정의를 라벨 간 순열한 derangement는 정확도를 떨어뜨리지 않았다
+> (\(\Delta_{\mathrm{map}}=+0.05\), CI가 0 포함). 그러나 사전의 **결론을 반전**하면 정확도가
+> 0.500→0.325로 하락했고(\(\Delta_{\mathrm{map}}^{\mathrm{strong}}=+0.175\), CI [0, 0.35]),
+> Symbol Only(0.450)는 Random Symbol(0.250)을 유의하게 능가했다
+> (\(\Delta_{\mathrm{symbol}}=+0.20\), McNemar p=0.021). 이는 이 규모에서 **심볼 구조와 사전
+> 의미내용이 모두 추론에 사용된다**는 예비 증거다(라벨 자체의 바인딩은 사용되지 않음). 부록 A
+> 기준 #2의 "Symbol Only > Random"은 충족, "Full+Dict > Corrupt"는 derangement가 아니라
+> **내용 변경형 corruption(Flipped)** 으로 평가해야 함을 시사한다.
 
-**강건성 점검 (gold-oracle ISM).** ISM을 gold rule graph로부터 결정적으로 생성한 변형
-(N=40)에서도 동일한 방향이 나타났다: \(\Delta_{\mathrm{map}}=0.000\) (CI [0,0]),
-\(\Delta_{\mathrm{symbol}}=-0.025\) (CI [−0.075, 0]). 증거:
-[docs/evidence/ablation-qwen7b-dev/](../docs/evidence/ablation-qwen7b-dev/README.md).
-
-두 변형 모두 \(\Delta_{\mathrm{map}}\approx 0\)이라는 예비 신호가 일관되나, N이 작고 단일
-seed이므로 RQ1 판정은 **등록 규모(dev 5k) paired evaluation 후** 확정한다.
+판정 한계: \(\Delta_{\mathrm{map}}^{\mathrm{strong}}\)은 N=40에서 경계적(p=0.12)이므로 RQ1 확정은
+**등록 규모(dev 5k) paired evaluation** 후로 미룬다. blank_dict(0.225)≈Random(0.25)은 정의 내용
+제거가 거의 무작위 수준으로 떨어짐을 보인다.
 
 #### 8.1.2 등록 규모 결과 (실험 완료 후 채움)
 
