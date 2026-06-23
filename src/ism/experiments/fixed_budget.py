@@ -131,6 +131,8 @@ def run_fixed_budget_experiment(
                     continue
                 _record(method, budget, document.document_id, text)
 
+    _write_contexts(output_dir / "contexts.jsonl", cell_texts, tokenizer)
+
     samples: list[InferenceSample] = []
     for (method, budget), texts in cell_texts.items():
         for document_id, text in texts.items():
@@ -273,6 +275,31 @@ def _build_results(
             )
         )
     return tuple(results)
+
+
+def _write_contexts(
+    path: Path,
+    cell_texts: dict[tuple[str, int], dict[str, str]],
+    tokenizer: WhitespaceTokenCounter,
+) -> None:
+    """Persist each produced context with its token count for budget auditing."""
+    lines: list[str] = []
+    for (method, budget), texts in sorted(cell_texts.items()):
+        for document_id, text in sorted(texts.items()):
+            lines.append(
+                json.dumps(
+                    {
+                        "method": method,
+                        "budget": budget,
+                        "document_id": document_id,
+                        "tokens": tokenizer.count(text),
+                        "text": text,
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                )
+            )
+    path.write_text("".join(line + "\n" for line in lines), encoding="utf-8")
 
 
 def _mean_tokens(texts: dict[str, str], tokenizer: WhitespaceTokenCounter) -> float:
