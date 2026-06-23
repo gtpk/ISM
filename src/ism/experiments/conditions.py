@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from ism.config import Condition
@@ -56,14 +57,26 @@ def build_condition_matrix(
     budget: int,
     seed: int,
     tokenizer: TokenCounter,
+    ism_representation: Callable[[GeneratedDocument], ISMRepresentation] | None = None,
 ) -> ConditionMatrix:
+    """Build per-condition inputs for every (document, question).
+
+    ``ism_representation`` supplies the ISM for a document; when omitted the ISM
+    is derived deterministically from the gold rule graph (oracle). The paper's
+    main setup injects an LLM compressor here instead.
+    """
     if len(conditions) != len(set(conditions)):
         raise ValueError("conditions must be unique")
     compressions: list[CompressionRecord] = []
     inputs: list[ConditionInput] = []
 
     for document in documents:
-        ism = _build_ism_compression(document, budget=budget, tokenizer=tokenizer)
+        ism = _build_ism_compression(
+            document,
+            budget=budget,
+            tokenizer=tokenizer,
+            representation=None if ism_representation is None else ism_representation(document),
+        )
         required_methods = {_method_for_condition(condition) for condition in conditions}
         method_records: dict[str, CompressionRecord] = {}
         if "ism" in required_methods:
@@ -152,17 +165,19 @@ def _build_ism_compression(
     *,
     budget: int,
     tokenizer: TokenCounter,
+    representation: ISMRepresentation | None = None,
 ) -> CompressionRecord:
-    definitions = tuple(
-        SymbolDefinition(label=f"Z{index}", definition=render_rule(rule))
-        for index, rule in enumerate(document.graph.rules, start=1)
-    )
-    labels = tuple(item.label for item in definitions)
-    representation = ISMRepresentation(
-        symbols=labels,
-        dictionary=definitions,
-        relations=(" ".join(labels),),
-    )
+    if representation is None:
+        definitions = tuple(
+            SymbolDefinition(label=f"Z{index}", definition=render_rule(rule))
+            for index, rule in enumerate(document.graph.rules, start=1)
+        )
+        labels = tuple(item.label for item in definitions)
+        representation = ISMRepresentation(
+            symbols=labels,
+            dictionary=definitions,
+            relations=(" ".join(labels),),
+        )
     serialized = serialize_ism(representation)
     return _compression_record(
         document,

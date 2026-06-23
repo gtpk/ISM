@@ -9,20 +9,23 @@ then reports AR/CR/ES per condition plus the pre-registered contrasts
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from ism.config import AppConfig
-from ism.data.generator import SyntheticGenerator
+from ism.data.generator import GeneratedDocument, SyntheticGenerator
 from ism.evaluation.metrics import ConditionMetric
 from ism.evaluation.reporting import report_from_artifacts
 from ism.evaluation.statistics import mcnemar_exact, paired_bootstrap_difference
 from ism.experiments.audit import write_condition_audit
+from ism.experiments.compressor import CompressionError, LlmCompressor
 from ism.experiments.conditions import build_condition_matrix
 from ism.inference.artifacts import AtomicPredictionStore
 from ism.inference.contracts import TextGenerator
 from ism.inference.pipeline import build_qa_prompt
 from ism.inference.runner import InferenceRunner, InferenceSample
+from ism.representation.models import ISMRepresentation
 from ism.representation.tokenizer import WhitespaceTokenCounter
 
 # Pre-registered contrasts (paper 6.1): (name, left, right).
@@ -45,12 +48,22 @@ class Contrast:
 
 
 @dataclass(frozen=True)
+class CompressionStats:
+    source: str  # "gold" | "llm"
+    documents: int
+    compressed: int
+    failures: int
+    mean_attempts: float
+
+
+@dataclass(frozen=True)
 class AblationSummary:
     run_id: str
     documents: int
     questions: int
     predictions: int
     successful: int
+    compression: CompressionStats
     conditions: tuple[ConditionMetric, ...]
     contrasts: tuple[Contrast, ...]
 
@@ -68,12 +81,18 @@ def run_ablation_experiment(
         split=config.experiment.split.value,
     )
     tokenizer = WhitespaceTokenCounter()
+
+    surviving, ism_representation, compression = _compress_documents(
+        documents, config=config, generator=generator, tokenizer=tokenizer
+    )
+
     matrix = build_condition_matrix(
-        documents,
+        surviving,
         conditions=tuple(config.conditions),
         budget=config.compression.budget,
         seed=config.experiment.seed,
         tokenizer=tokenizer,
+        ism_representation=ism_representation,
     )
     output_dir.mkdir(parents=True, exist_ok=True)
     audit_path = output_dir / "condition_audit.json"
@@ -81,7 +100,7 @@ def run_ablation_experiment(
 
     questions = {
         question.question_id: question
-        for document in documents
+        for document in surviving
         for question in document.questions
     }
     samples = tuple(
@@ -133,15 +152,80 @@ def run_ablation_experiment(
 
     summary = AblationSummary(
         run_id=config.experiment.name,
-        documents=len(documents),
+        documents=len(surviving),
         questions=len(questions),
         predictions=len(records),
         successful=sum(1 for record in records if record.error_kind is None),
+        compression=compression,
         conditions=metrics,
         contrasts=tuple(contrasts),
     )
     _write_json(output_dir / "ablation_summary.json", asdict(summary))
     return summary
+
+
+def _compress_documents(
+    documents: tuple[GeneratedDocument, ...],
+    *,
+    config: AppConfig,
+    generator: TextGenerator,
+    tokenizer: WhitespaceTokenCounter,
+) -> tuple[
+    tuple[GeneratedDocument, ...],
+    Callable[[GeneratedDocument], ISMRepresentation] | None,
+    CompressionStats,
+]:
+    """Compress documents into ISMs.
+
+    For the mock backend the ISM is the deterministic gold-graph oracle (no
+    injected representation). For a real model the LLM compressor produces and
+    parses the ISM; documents that never yield a valid ISM are dropped and
+    reported as failures (paper §5.4 regeneration/failure reporting).
+    """
+    if config.model.backend != "transformers":
+        stats = CompressionStats(
+            source="gold",
+            documents=len(documents),
+            compressed=len(documents),
+            failures=0,
+            mean_attempts=1.0,
+        )
+        return documents, None, stats
+
+    compressor = LlmCompressor(
+        generator,
+        tokenizer=tokenizer,
+        seed=config.experiment.seed,
+        max_attempts=config.compression.max_regeneration_attempts,
+        max_new_tokens=config.compression.max_new_tokens,
+    )
+    representations: dict[str, ISMRepresentation] = {}
+    attempts: list[int] = []
+    failures = 0
+    for document in documents:
+        try:
+            outcome = compressor.compress(document, budget=config.compression.budget)
+        except CompressionError:
+            failures += 1
+            continue
+        representations[document.document_id] = outcome.representation
+        attempts.append(outcome.attempts)
+
+    surviving = tuple(d for d in documents if d.document_id in representations)
+    if not surviving:
+        raise CompressionError("no document produced a valid ISM compression")
+    stats = CompressionStats(
+        source="llm",
+        documents=len(documents),
+        compressed=len(surviving),
+        failures=failures,
+        mean_attempts=sum(attempts) / len(attempts) if attempts else 0.0,
+    )
+
+    def lookup(document: GeneratedDocument) -> ISMRepresentation:
+        return representations[document.document_id]
+
+    return surviving, lookup, stats
 
 
 def _contrast(
