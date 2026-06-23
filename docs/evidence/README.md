@@ -14,6 +14,7 @@
 | 6.1 (강한 corruption, 7be5618) | LLM ISM purity 1.0 + flip/blank, N=40 | Δsymbol +0.20 (p=0.021), Δmap_flip +0.175, Δmap_derange≈0 | [ablation-qwen7b-strong/](ablation-qwen7b-strong/README.md) |
 | 6.1 (dev scale-up, 87e216e) | N=120 docs / 240 문항, 3×40 샤드 merge | **Δmap_flip +0.079 (p=0.032)**, Δsymbol +0.108 (p=0.0005), Δmap_derange≈0 | [ablation-qwen7b-N120/](ablation-qwen7b-N120/README.md) |
 | 6.3 (long smoke, 714eff1) | N=10 docs, 4 budgets × 5 methods, full~1262 tok | model_summary ≫ ISM (AR·ES); over-budget 0 | [fixed-budget-long-smoke/](fixed-budget-long-smoke/README.md) |
+| 6.3 filler sanity (2405314) | full_context vs summary, 길이 none/mid/long | gap −0.05→+0.15→+0.25 ⇒ AR>1은 filler artifact | [fixed-budget-filler-sanity/](fixed-budget-filler-sanity/README.md) |
 
 ## S0 — config parity (COL-ENV-004)
 
