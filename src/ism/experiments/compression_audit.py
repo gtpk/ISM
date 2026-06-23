@@ -59,7 +59,7 @@ def run_compression_audit(
         tokenizer=tokenizer,
         seed=config.experiment.seed,
         max_attempts=config.compression.max_regeneration_attempts,
-        max_new_tokens=config.compression.max_new_tokens,
+        max_new_tokens=config.compression.generation_max_new_tokens,
     )
 
     output_dir.mkdir(parents=True, exist_ok=True)

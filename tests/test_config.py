@@ -27,6 +27,14 @@ def test_p0_con_001_minimum_config_loads_as_typed_model() -> None:
     assert config.execution_budget.stage.value == "L2"
 
 
+def test_compression_generation_budget_defaults_and_overrides() -> None:
+    # Separate from `budget`: the compressor's decoding room. Smoke omits it.
+    assert load_config(SMOKE_CONFIG).compression.generation_max_new_tokens == 512
+    ablation = load_config(ROOT / "configs/experiments/ablation_qwen7b.yaml")
+    assert ablation.compression.generation_max_new_tokens == 512
+    assert ablation.compression.budget == 128  # final ISM bound unchanged
+
+
 def test_p0_cfg_001_unknown_key_reports_field_path() -> None:
     raw = load_raw()
     raw["unknown_section"] = {"enabled": True}

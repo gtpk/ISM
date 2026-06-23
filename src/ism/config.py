@@ -72,6 +72,11 @@ class CompressionConfig(StrictModel):
     prompt_version: Annotated[str, Field(min_length=1)]
     max_regeneration_attempts: Annotated[int, Field(ge=1)]
     max_new_tokens: Annotated[int, Field(ge=1)]
+    # Decoding budget the compressor may use to emit a complete
+    # [DICTIONARY]/[RELATIONS] block. Separate from `budget`, which still bounds
+    # the *final* representation length. Larger output is regenerated/rejected by
+    # the budget check, so this only gives the model working room.
+    generation_max_new_tokens: Annotated[int, Field(ge=1)] = 512
 
 
 class OutputConfig(StrictModel):

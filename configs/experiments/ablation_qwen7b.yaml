@@ -26,6 +26,10 @@ compression:
   prompt_version: ism-v1
   max_regeneration_attempts: 3
   max_new_tokens: 256
+  # Decoding room for the compressor to emit a full [DICTIONARY]/[RELATIONS]
+  # block; the final ISM is still bounded by `budget`. Raised from the 512
+  # default headroom is not needed, but kept explicit for tuning.
+  generation_max_new_tokens: 512
 
 # Experiment 6.1 — Dictionary Ablation (RQ1). ISM conditions only; the text
 # comparison methods (model_summary/keyword_extract/llmlingua_2) are still
