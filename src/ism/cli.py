@@ -21,7 +21,7 @@ from ism.experiments.budgets import (
 )
 from ism.experiments.compression_audit import run_compression_audit
 from ism.experiments.conditions import build_condition_matrix
-from ism.experiments.fixed_budget import run_fixed_budget_experiment
+from ism.experiments.fixed_budget import merge_fixed_budget, run_fixed_budget_experiment
 from ism.experiments.methods import FIXED_BUDGET_METHODS
 from ism.inference.factory import build_text_generator
 from ism.inference.mock import MockTextGenerator
@@ -111,6 +111,14 @@ def build_parser() -> argparse.ArgumentParser:
     fixed_budget.add_argument("--resume", action="store_true")
     fixed_budget.add_argument("--doc-offset", type=int, default=0)
     fixed_budget.add_argument("--doc-count", type=int, default=None)
+
+    merge_fb = subparsers.add_parser(
+        "merge-fixed-budget",
+        help="merge fixed-budget shard outputs into one evaluation",
+    )
+    merge_fb.add_argument("--config", required=True, type=Path)
+    merge_fb.add_argument("--output", required=True, type=Path)
+    merge_fb.add_argument("--shards", required=True, nargs="+", type=Path)
 
     audit = subparsers.add_parser(
         "audit-conditions",
@@ -267,6 +275,17 @@ def main(argv: Sequence[str] | None = None) -> None:
             )
             sys.stdout.write(
                 json.dumps(asdict(fb), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+            )
+            return
+        if args.command == "merge-fixed-budget":
+            merged = merge_fixed_budget(
+                tuple(args.shards),
+                output_dir=args.output,
+                run_id=config.experiment.name,
+                seed=config.experiment.seed,
+            )
+            sys.stdout.write(
+                json.dumps(asdict(merged), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
             )
             return
         if args.command == "audit-conditions":

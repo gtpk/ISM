@@ -5,7 +5,7 @@ from pathlib import Path
 
 from ism.config import load_config
 from ism.data.generator import SyntheticGenerator
-from ism.experiments.fixed_budget import run_fixed_budget_experiment
+from ism.experiments.fixed_budget import merge_fixed_budget, run_fixed_budget_experiment
 from ism.experiments.methods import (
     compute_idf,
     keyword_extract_text,
@@ -101,3 +101,28 @@ def test_fixed_budget_includes_ism_with_llm_generator(tmp_path: Path) -> None:
     assert {"full_context", "ism", "model_summary"} <= methods
     payload = json.loads((tmp_path / "fixed_budget_summary.json").read_text())
     assert payload["budgets"] == [64]
+    # Paired summary-vs-ism contrast is reported per budget where both exist.
+    names = {(c.name, c.budget) for c in summary.paired_contrasts}
+    assert ("summary_vs_ism", 64) in names
+
+
+def test_merge_fixed_budget_combines_shards(tmp_path: Path) -> None:
+    config = load_config(MOCK_CONFIG)
+    methods = ("full_context", "keyword_extract", "model_summary")
+    shard_a = tmp_path / "a"
+    shard_b = tmp_path / "b"
+    run_fixed_budget_experiment(
+        config, output_dir=shard_a, generator=MockTextGenerator(),
+        budgets=(32,), methods=methods, doc_offset=0, doc_count=2,
+    )
+    run_fixed_budget_experiment(
+        config, output_dir=shard_b, generator=MockTextGenerator(),
+        budgets=(32,), methods=methods, doc_offset=2, doc_count=2,
+    )
+    merged = merge_fixed_budget(
+        (shard_a, shard_b), output_dir=tmp_path / "merged", run_id="merged", seed=42
+    )
+    assert merged.documents == 4
+    # 4 docs x 2 questions x (full_context + 2 methods @ 1 budget) = 24
+    assert merged.predictions == 24
+    assert (tmp_path / "merged" / "fixed_budget_summary.json").is_file()

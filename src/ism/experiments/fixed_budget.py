@@ -15,6 +15,7 @@ from pathlib import Path
 
 from ism.config import AppConfig
 from ism.data.generator import GeneratedDocument, GeneratedQuestion, SyntheticGenerator
+from ism.evaluation.statistics import mcnemar_exact, paired_bootstrap_difference
 from ism.experiments.compressor import CompressionError, LlmCompressor
 from ism.experiments.methods import (
     compute_idf,
@@ -49,6 +50,23 @@ class MethodBudgetMetric:
 
 
 @dataclass(frozen=True)
+class PairedContrast:
+    """Same-question paired comparison between two methods at one budget."""
+
+    name: str
+    left: str
+    right: str
+    budget: int
+    estimate: float  # Acc(left) - Acc(right)
+    ci_lower: float
+    ci_upper: float
+    mcnemar_p: float
+    discordant_left: int  # left correct, right wrong
+    discordant_right: int  # right correct, left wrong
+    n: int
+
+
+@dataclass(frozen=True)
 class FixedBudgetSummary:
     run_id: str
     documents: int
@@ -57,6 +75,7 @@ class FixedBudgetSummary:
     predictions: int
     successful: int
     results: tuple[MethodBudgetMetric, ...]
+    paired_contrasts: tuple[PairedContrast, ...]
 
 
 def run_fixed_budget_experiment(
@@ -168,13 +187,16 @@ def run_fixed_budget_experiment(
         resume=resume,
     )
 
-    results = _build_results(
-        records=records,
-        cell_texts=cell_texts,
-        cell_failures=cell_failures,
-        tokenizer=tokenizer,
+    results, paired = _assemble(
+        correct_by_condition=_correct_by_condition_from_records(records),
+        mean_tokens_by_cell={
+            key: _mean_tokens(texts, tokenizer) for key, texts in cell_texts.items()
+        },
+        produced_by_cell={key: len(texts) for key, texts in cell_texts.items()},
+        failed_by_cell=cell_failures,
         budgets=budgets,
         methods=methods,
+        seed=config.experiment.seed,
     )
     summary = FixedBudgetSummary(
         run_id=config.experiment.name,
@@ -184,6 +206,7 @@ def run_fixed_budget_experiment(
         predictions=len(records),
         successful=sum(1 for r in records if r.error_kind is None),
         results=results,
+        paired_contrasts=paired,
     )
     (output_dir / "fixed_budget_summary.json").write_text(
         json.dumps(asdict(summary), ensure_ascii=False, indent=2, sort_keys=True) + "\n",
@@ -231,36 +254,34 @@ def _questions_for(
     return ()
 
 
-def _build_results(
+# Primary paired comparisons (paper 6.3, per budget): (name, left, right).
+_PAIRED = (("summary_vs_ism", "model_summary", "ism"),)
+
+
+def _assemble(
     *,
-    records: tuple[PredictionRecord, ...],
-    cell_texts: dict[tuple[str, int], dict[str, str]],
-    cell_failures: dict[tuple[str, int], int],
-    tokenizer: WhitespaceTokenCounter,
+    correct_by_condition: dict[str, dict[str, bool]],
+    mean_tokens_by_cell: dict[tuple[str, int], float],
+    produced_by_cell: dict[tuple[str, int], int],
+    failed_by_cell: dict[tuple[str, int], int],
     budgets: tuple[int, ...],
     methods: tuple[str, ...],
-) -> tuple[MethodBudgetMetric, ...]:
-    correct: dict[str, list[bool]] = {}
-    for record in records:
-        correct.setdefault(record.condition, []).append(record.correct)
-
+    seed: int,
+) -> tuple[tuple[MethodBudgetMetric, ...], tuple[PairedContrast, ...]]:
     def _accuracy(condition: str) -> float | None:
-        values = correct.get(condition)
-        return sum(values) / len(values) if values else None
+        values = correct_by_condition.get(condition)
+        return sum(values.values()) / len(values) if values else None
 
     full_accuracy = _accuracy(f"{_FULL_CONTEXT}@0")
-    full_tokens = _mean_tokens(cell_texts.get((_FULL_CONTEXT, 0), {}), tokenizer)
+    full_tokens = mean_tokens_by_cell.get((_FULL_CONTEXT, 0), 0.0)
 
     results: list[MethodBudgetMetric] = []
-    cells = [(_FULL_CONTEXT, 0)] + [
-        (m, b) for m in methods if m != _FULL_CONTEXT for b in budgets
-    ]
+    cells = [(_FULL_CONTEXT, 0)] + [(m, b) for m in methods if m != _FULL_CONTEXT for b in budgets]
     for method, budget in cells:
-        condition = f"{method}@{budget}"
-        accuracy = _accuracy(condition)
+        accuracy = _accuracy(f"{method}@{budget}")
         if accuracy is None:
             continue
-        mean_tokens = _mean_tokens(cell_texts.get((method, budget), {}), tokenizer)
+        mean_tokens = mean_tokens_by_cell.get((method, budget), 0.0)
         ar = accuracy / full_accuracy if full_accuracy else None
         cr = mean_tokens / full_tokens if full_tokens else None
         es = ar / cr if ar is not None and cr not in (None, 0) else None
@@ -272,13 +293,163 @@ def _build_results(
                 accuracy_retention=ar,
                 compression_ratio=cr,
                 efficiency_score=es,
-                questions=len(correct[condition]),
-                produced_docs=len(cell_texts.get((method, budget), {})),
-                failed_docs=cell_failures.get((method, budget), 0),
+                questions=len(correct_by_condition[f"{method}@{budget}"]),
+                produced_docs=produced_by_cell.get((method, budget), 0),
+                failed_docs=failed_by_cell.get((method, budget), 0),
                 mean_tokens=mean_tokens,
             )
         )
-    return tuple(results)
+
+    contrasts: list[PairedContrast] = []
+    for name, left, right in _PAIRED:
+        for budget in budgets:
+            contrast = _paired_contrast(
+                name, left, right, budget, correct_by_condition, seed=seed
+            )
+            if contrast is not None:
+                contrasts.append(contrast)
+    return tuple(results), tuple(contrasts)
+
+
+def _paired_contrast(
+    name: str,
+    left: str,
+    right: str,
+    budget: int,
+    correct_by_condition: dict[str, dict[str, bool]],
+    *,
+    seed: int,
+) -> PairedContrast | None:
+    left_map = correct_by_condition.get(f"{left}@{budget}")
+    right_map = correct_by_condition.get(f"{right}@{budget}")
+    if not left_map or not right_map:
+        return None
+    qids = sorted(set(left_map) & set(right_map))
+    if not qids:
+        return None
+    left_bool = tuple(left_map[q] for q in qids)
+    right_bool = tuple(right_map[q] for q in qids)
+    interval = paired_bootstrap_difference(
+        tuple(float(v) for v in left_bool),
+        tuple(float(v) for v in right_bool),
+        seed=seed,
+    )
+    first_only, second_only, p_value = mcnemar_exact(left_bool, right_bool)
+    return PairedContrast(
+        name=name,
+        left=left,
+        right=right,
+        budget=budget,
+        estimate=interval.estimate,
+        ci_lower=interval.lower,
+        ci_upper=interval.upper,
+        mcnemar_p=p_value,
+        discordant_left=first_only,
+        discordant_right=second_only,
+        n=len(qids),
+    )
+
+
+def _correct_by_condition_from_records(
+    records: tuple[PredictionRecord, ...],
+) -> dict[str, dict[str, bool]]:
+    out: dict[str, dict[str, bool]] = {}
+    for record in records:
+        out.setdefault(record.condition, {})[record.question_id] = record.correct
+    return out
+
+
+def merge_fixed_budget(
+    shard_dirs: tuple[Path, ...],
+    *,
+    output_dir: Path,
+    run_id: str,
+    seed: int,
+) -> FixedBudgetSummary:
+    """Combine fixed-budget shards (disjoint documents) into one evaluation.
+
+    Concatenates predictions and contexts, re-validates budget compliance and
+    sample-id uniqueness, sums per-cell failures, then recomputes metrics and
+    paired contrasts over the combined set.
+    """
+    output_dir.mkdir(parents=True, exist_ok=True)
+    pred_lines: list[str] = []
+    ctx_lines: list[str] = []
+    budgets: tuple[int, ...] = ()
+    methods: tuple[str, ...] = ()
+    documents = 0
+    failed_by_cell: dict[tuple[str, int], int] = {}
+    seen_ids: set[str] = set()
+
+    for shard in shard_dirs:
+        meta = json.loads((shard / "fixed_budget_summary.json").read_text(encoding="utf-8"))
+        if not budgets:
+            budgets = tuple(meta["budgets"])
+            methods = tuple(meta["methods"])
+        documents += meta["documents"]
+        for row in meta["results"]:
+            key = (row["method"], row["budget"])
+            failed_by_cell[key] = failed_by_cell.get(key, 0) + row["failed_docs"]
+        for line in (shard / "predictions.jsonl").read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            sample_id = json.loads(line)["sample_id"]
+            if sample_id in seen_ids:
+                raise ValueError(f"duplicate sample id across shards: {sample_id}")
+            seen_ids.add(sample_id)
+            pred_lines.append(line)
+        ctx_lines.extend(
+            line
+            for line in (shard / "contexts.jsonl").read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        )
+
+    (output_dir / "predictions.jsonl").write_text("\n".join(pred_lines) + "\n", encoding="utf-8")
+    (output_dir / "contexts.jsonl").write_text("\n".join(ctx_lines) + "\n", encoding="utf-8")
+
+    correct_by_condition: dict[str, dict[str, bool]] = {}
+    successful = 0
+    for line in pred_lines:
+        record = json.loads(line)
+        correct_by_condition.setdefault(record["condition"], {})[record["question_id"]] = record[
+            "correct"
+        ]
+        if record["error_kind"] is None:
+            successful += 1
+
+    cell_tokens: dict[tuple[str, int], list[int]] = {}
+    for line in ctx_lines:
+        ctx = json.loads(line)
+        if ctx["budget"] and ctx["tokens"] > ctx["budget"]:
+            raise ValueError(f"context exceeds budget: {ctx['method']}@{ctx['budget']}")
+        cell_tokens.setdefault((ctx["method"], ctx["budget"]), []).append(ctx["tokens"])
+    mean_tokens_by_cell = {key: sum(v) / len(v) for key, v in cell_tokens.items()}
+    produced_by_cell = {key: len(v) for key, v in cell_tokens.items()}
+
+    results, paired = _assemble(
+        correct_by_condition=correct_by_condition,
+        mean_tokens_by_cell=mean_tokens_by_cell,
+        produced_by_cell=produced_by_cell,
+        failed_by_cell=failed_by_cell,
+        budgets=budgets,
+        methods=methods,
+        seed=seed,
+    )
+    summary = FixedBudgetSummary(
+        run_id=run_id,
+        documents=documents,
+        budgets=budgets,
+        methods=methods,
+        predictions=len(pred_lines),
+        successful=successful,
+        results=results,
+        paired_contrasts=paired,
+    )
+    (output_dir / "fixed_budget_summary.json").write_text(
+        json.dumps(asdict(summary), ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return summary
 
 
 def _write_contexts(
@@ -312,4 +483,10 @@ def _mean_tokens(texts: dict[str, str], tokenizer: WhitespaceTokenCounter) -> fl
     return sum(tokenizer.count(text) for text in texts.values()) / len(texts)
 
 
-__all__ = ["FixedBudgetSummary", "MethodBudgetMetric", "run_fixed_budget_experiment"]
+__all__ = [
+    "FixedBudgetSummary",
+    "MethodBudgetMetric",
+    "PairedContrast",
+    "merge_fixed_budget",
+    "run_fixed_budget_experiment",
+]
