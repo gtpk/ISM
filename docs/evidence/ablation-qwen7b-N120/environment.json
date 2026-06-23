@@ -1,0 +1,7 @@
+{
+  "commit": "87e216e",
+  "gpu": "Tesla T4",
+  "elapsed_s": 3616.3,
+  "config_hash": "c907f84068de6c99d79f5b298abb7c56a0e4056013545b1d9fcd1c199c15f07c",
+  "shards": "3x40 docs, resume+cache"
+}

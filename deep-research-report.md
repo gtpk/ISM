@@ -388,20 +388,38 @@ config_hash `15c72cfd…`, commit `7be5618`, 압축 20/20.
 **등록 규모(dev 5k) paired evaluation** 후로 미룬다. blank_dict(0.225)≈Random(0.25)은 정의 내용
 제거가 거의 무작위 수준으로 떨어짐을 보인다.
 
-#### 8.1.2 등록 규모 결과 (실험 완료 후 채움)
+#### 8.1.2 Dev scale-up 결과 (N=120 문서 / 240 문항)
 
-| 조건 | Accuracy | AR | Full+Dict 대비 차이 | 95% CI |
-|---|---:|---:|---:|---:|
-| Full Context | [ ] | 1.000 | - | [ ] |
-| Full Symbol + Dict | [ ] | [ ] | - | [ ] |
-| Symbol Only | [ ] | [ ] | [ ] | [ ] |
-| Corrupted Dict | [ ] | [ ] | [ ] | [ ] |
-| Random Symbol | [ ] | [ ] | [ ] | [ ] |
-| Model Summary | [ ] | [ ] | [ ] | [ ] |
+> dev pilot(8.1.1, N=40)을 확장한 결과다. **full registered scale(dev 5k)은 아니며**, 압축
+> batching 등 추가 컴퓨트 후 확정한다. 단 부록 A.1의 construct-valid contrast가 이 규모에서
+> 유의해졌다. 증거: [docs/evidence/ablation-qwen7b-N120/](../docs/evidence/ablation-qwen7b-N120/README.md),
+> config_hash `c907f84…`, commit `87e216e`, 압축 120/120(실패 0), 3×40 샤드 + resume/merge.
+> 비교군 Model Summary는 미구현으로 제외.
+
+| 조건 | Accuracy | AR | CR |
+|---|---:|---:|---:|
+| Full Context | 0.750 | 1.000 | 1.000 |
+| Full Symbol + Dict | 0.446 | 0.594 | 0.745 |
+| Corrupted Dict (derange) | 0.375 | 0.500 | 0.745 |
+| Flipped Dict (flip) | 0.367 | 0.489 | 0.745 |
+| Blank Dict | 0.250 | 0.333 | 0.215 |
+| Symbol Only | 0.413 | 0.550 | 0.079 |
+| Random Symbol | 0.304 | 0.406 | 0.738 |
+
+- \(\Delta_{\mathrm{map}}^{\mathrm{derange}}\) (label-binding, 보조) = **+0.071**, 95% CI [−0.021, 0.163], McNemar p=0.159 (n=240)
+- \(\Delta_{\mathrm{map}}^{\mathrm{flip}}\) (semantic-content, **primary**) = **+0.079**, 95% CI [0.013, 0.146], McNemar **p=0.032** (n=240)
+- \(\Delta_{\mathrm{symbol}}\) (symbolic-structure) = **+0.108**, 95% CI [0.050, 0.167], McNemar **p=0.0005** (n=240)
 
 보고 문장:
 
-> Full Symbol + Dict의 정확도는 [값]이었으며, 사전 오염 후 [값]으로 [하락/유지]하였다(\(\Delta_{\mathrm{map}}=[값]\), 95% CI [구간]). Symbol Only는 Random Symbol보다 [값]%p [높았다/차이가 없었다](95% CI [구간]). 이 결과는 [사전 매핑과 심볼 구조가 모두 기능적으로 사용됨 / 사전만 사용됨 / 유효한 심볼 정보를 확인하지 못함]을 시사한다.
+> dev scale-up(N=240)에서 사전의 **결론을 반전**하면 정확도가 0.446→0.367로 하락했고
+> (\(\Delta_{\mathrm{map}}^{\mathrm{flip}}=+0.079\), 95% CI [0.013, 0.146], p=0.032),
+> Symbol Only(0.413)는 Random Symbol(0.304)을 능가했다(\(\Delta_{\mathrm{symbol}}=+0.108\), p=0.0005).
+> 반면 라벨 순열(derangement)은 유의한 영향이 없었다(\(\Delta_{\mathrm{map}}^{\mathrm{derange}}=+0.071\),
+> CI가 0 포함, p=0.16). 이는 **심볼 구조와 사전 의미내용이 모두 추론에 사용되며 라벨 자체의
+> 바인딩은 사용되지 않음**을 시사한다. 부록 A.1의 amended primary 기준(Full+Dict > Flipped
+> AND Symbol Only > Random)을 dev scale-up에서 충족한다. 최종 확정은 full registered scale
+> 에서 수행한다.
 
 ### 8.2 Dictionary Swap
 
